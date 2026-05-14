@@ -1,73 +1,93 @@
-# React + TypeScript + Vite
+# Gruas Zamora Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web desarrollada para simular el sistema de atención de una empresa de asistencia vehicular llamada **Gruas Zamora**. La plataforma permite a los usuarios conocer los servicios disponibles, explorar información sobre la empresa y solicitar ayuda de manera rápida mediante una interfaz clara y moderna.
 
-Currently, two official plugins are available:
+El objetivo del proyecto es mostrar el desarrollo de una aplicación web moderna enfocada en la experiencia del usuario, utilizando tecnologías actuales del ecosistema de JavaScript y desplegada en la nube.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Aplicación desplegada:  
+https://gruas-zamora.vercel.app/
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Características
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Interfaz moderna y responsiva.
+- Navegación clara entre las diferentes secciones del sitio.
+- Presentación de servicios de asistencia vehicular.
+- Página optimizada para una experiencia sencilla para el usuario.
+- Despliegue en producción utilizando Vercel.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tecnologías Utilizadas
+
+Este proyecto fue desarrollado utilizando las siguientes tecnologías:
+
+- **React**
+- **TypeScript**
+- **Vite**
+- **HTML5**
+- **CSS3**
+- **ESLint**
+- **Vercel**
+
+---
+
+## Estructura del Proyecto
+
+```
+GruasZamoraWeb
+│
+├── public/          # Archivos públicos
+├── src/             # Código fuente principal
+├── index.html       # Punto de entrada de la aplicación
+├── package.json     # Dependencias del proyecto
+├── vite.config.ts   # Configuración de Vite
+└── vercel.json      # Configuración de despliegue
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Instalación y Uso
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Si deseas ejecutar el proyecto de forma local:
+
+### 1. Clonar el repositorio
+
 ```
+git clone https://github.com/tu-usuario/GruasZamora.git
+```
+
+### 2. Entrar a la carpeta del proyecto
+
+```
+cd GruasZamora
+```
+
+### 3. Instalar dependencias
+
+```
+npm install
+```
+
+### 4. Ejecutar el proyecto
+
+```
+npm run dev
+```
+
+La aplicación se abrirá en:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Autor
+
+Proyecto desarrollado por **Diego Zamora** como parte de práctica y aprendizaje en desarrollo web.
