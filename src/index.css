@@ -53,7 +53,6 @@
   --font-body: "Inter", sans-serif;
   --font-label: "Inter", sans-serif;
 
-  /* Disabling rounded corners as per Stitch config */
   --radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 0px;
@@ -61,17 +60,165 @@
   --radius-2xl: 0px;
 }
 
+/* ── Keyframes ─────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0   rgba(255, 215, 0, 0.55); }
+  70%  { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(255, 215, 0, 0); }
+}
+
+@keyframes shimmerSweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+@keyframes progressGrow {
+  from { width: 0; }
+}
+
+/* ── Base ──────────────────────────────────────────────────────── */
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }
 
+/* ── Utilities ─────────────────────────────────────────────────── */
+
 @layer utilities {
+  /* Texture */
   .diamond-plate-overlay {
     background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20L20 0l20 20-20 20zM20 10l5 5-5 5-5-5z' fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
+
   .kinetic-monolith {
     clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+  }
+
+  /* ── Scroll-reveal base states ─────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-52px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(52px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.93);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Added by JS hook when element enters viewport */
+  .revealed {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ── Glass navbar ──────────────────── */
+  .glass-nav {
+    background: rgba(10, 10, 10, 0.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.13);
+  }
+
+  /* ── Hero entrance animations ──────── */
+  .hero-1 { animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.10s both; }
+  .hero-2 { animation: fadeInUp 0.80s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both; }
+  .hero-3 { animation: fadeInUp 0.70s cubic-bezier(0.16, 1, 0.3, 1) 0.52s both; }
+  .hero-4 { animation: fadeInUp 0.70s cubic-bezier(0.16, 1, 0.3, 1) 0.70s both; }
+
+  /* ── Card hover glow ───────────────── */
+  .card-lift {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 48px rgba(255, 215, 0, 0.10),
+                0 4px 16px rgba(0, 0, 0, 0.55);
+  }
+
+  /* ── Pulse ring for phone CTA ──────── */
+  .pulse-ring {
+    animation: pulseRing 2.4s cubic-bezier(0.4, 0, 0.6, 1) 1.2s infinite;
+  }
+
+  /* ── Shimmer on golden elements ────── */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      transparent
+    );
+    animation: shimmerSweep 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* ── Nav link animated underline ───── */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #FFD700;
+    transition: width 0.28s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link-active::after {
+    width: 100%;
   }
 }
