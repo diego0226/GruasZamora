@@ -8,16 +8,25 @@ import { FAQS, type Faq as FaqItem } from '@/lib/faq';
  * teclado y con todo el texto presente en el HTML — que es justo lo que
  * necesita el crawler para poder citar la respuesta.
  */
-export function Faq({ items = FAQS }: { items?: FaqItem[] }) {
+export function Faq({
+  items = FAQS,
+  title,
+}: {
+  items?: FaqItem[];
+  /** Las landings de zona lo sobrescriben para nombrar la zona en el H2. */
+  title?: React.ReactNode;
+}) {
   return (
     <section id="preguntas" className="scroll-mt-24 bg-night-950 py-20 lg:py-28">
       <div className="mx-auto max-w-4xl px-5 sm:px-6">
         <SectionHeading
           eyebrow="Preguntas frecuentes"
           title={
-            <>
-              Lo que todo el mundo <span className="text-flag-red-lit">pregunta</span>
-            </>
+            title ?? (
+              <>
+                Lo que todo el mundo <span className="text-flag-red-lit">pregunta</span>
+              </>
+            )
           }
           lead="Respuestas directas, sin rodeos. Si su duda no está aquí, llame y se la contestamos por teléfono."
         />

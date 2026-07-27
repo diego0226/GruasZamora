@@ -12,7 +12,7 @@ import { JsonLd } from '@/components/JsonLd';
 
 import { SERVICES } from '@/lib/services';
 import { SITE, OG_IMAGE } from '@/lib/site';
-import { breadcrumbSchema, faqSchema } from '@/lib/schema';
+import { breadcrumbSchema, serviceListSchema } from '@/lib/schema';
 
 const TITLE = 'Servicios de Grúa en Costa Rica 24/7';
 const DESCRIPTION =
@@ -40,7 +40,9 @@ export default function ServicesIndexPage() {
 
   return (
     <>
-      <JsonLd data={[breadcrumbSchema(crumbs), faqSchema()]} />
+      {/* El FAQPage de estas preguntas vive en el home — ver la nota en
+          /servicios/[servicio]/page.tsx. */}
+      <JsonLd data={[breadcrumbSchema(crumbs), serviceListSchema(SERVICES)]} />
 
       <PageHero
         crumbs={crumbs}

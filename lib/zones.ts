@@ -41,7 +41,7 @@ export const ZONES: Zone[] = [
     heading: 'Grúas en Grecia, Alajuela',
     metaTitle: 'Grúas en Grecia 24/7 · Servicio Inmediato',
     metaDescription:
-      'Servicio de grúas en Grecia, Alajuela las 24 horas. Plataforma, arrastre y rescate en Tacares, San Roque, Puente de Piedra y todo el cantón. Llame al 8387-6352.',
+      'Grúas en Grecia, Alajuela las 24 horas. Plataforma, arrastre y rescate en Tacares, San Roque, Puente de Piedra y todo el cantón. Llame al 8387-6352.',
     kind: 'canton',
     geo: { latitude: 10.0722, longitude: -84.3136 },
     lead:
@@ -100,7 +100,7 @@ export const ZONES: Zone[] = [
     heading: 'Grúas en Occidente de Alajuela',
     metaTitle: 'Grúas en Occidente de Alajuela 24 Horas',
     metaDescription:
-      'Grúas y rescate vehicular 24/7 en todo el Occidente de Alajuela: Grecia, Sarchí, Naranjo, Palmares, San Ramón, Zarcero, Atenas y Poás. Base en Grecia. Llame al 8387-6352.',
+      'Grúas 24/7 en todo el Occidente de Alajuela: Grecia, Sarchí, Naranjo, Palmares, San Ramón, Zarcero, Atenas y Poás. Base en Grecia. Llame al 8387-6352.',
     kind: 'region',
     geo: { latitude: 10.0722, longitude: -84.3136 },
     lead:
@@ -171,7 +171,7 @@ export const ZONES: Zone[] = [
     heading: 'Grúas en Costa Rica — cobertura nacional 24/7',
     metaTitle: 'Grúas en Costa Rica 24/7 · Todo el País',
     metaDescription:
-      'Servicio de grúas en todo Costa Rica las 24 horas: remolque de plataforma, arrastre y rescate vehicular en las 7 provincias. Más de 30 años de experiencia. 8387-6352.',
+      'Grúas en todo Costa Rica 24 horas: plataforma, arrastre y rescate vehicular en las 7 provincias. Más de 30 años de experiencia. Llame al 8387-6352.',
     kind: 'nacional',
     geo: { latitude: 9.9281, longitude: -84.0907 },
     lead:
@@ -293,7 +293,7 @@ export const ZONES: Zone[] = [
     heading: 'Grúas en Naranjo',
     metaTitle: 'Grúas en Naranjo 24/7 · Remolque y Rescate',
     metaDescription:
-      'Servicio de grúas en Naranjo las 24 horas: cuesta de Naranjo, Ruta 141 hacia Zarcero, Cirrí Sur y San Jerónimo. Plataforma, arrastre y rescate vehicular. 8387-6352.',
+      'Grúas en Naranjo 24 horas: cuesta de Naranjo, Ruta 141 hacia Zarcero, Cirrí Sur y San Jerónimo. Plataforma, arrastre y rescate. Llame al 8387-6352.',
     kind: 'canton',
     geo: { latitude: 10.0947, longitude: -84.3808 },
     lead:
@@ -389,7 +389,7 @@ export const ZONES: Zone[] = [
     heading: 'Grúas en Palmares',
     metaTitle: 'Grúas en Palmares 24/7 · Remolque',
     metaDescription:
-      'Grúas en Palmares las 24 horas: centro, Zaragoza, Buenos Aires, Santiago y Esquipulas. Plataforma y arrastre. Cobertura reforzada durante las Fiestas de Palmares. Llame al 8387-6352.',
+      'Grúas en Palmares 24 horas: centro, Zaragoza, Buenos Aires, Santiago y Esquipulas. Cobertura reforzada durante las Fiestas de Palmares. 8387-6352.',
     kind: 'canton',
     geo: { latitude: 10.0553, longitude: -84.4356 },
     lead:

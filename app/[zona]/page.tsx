@@ -13,6 +13,7 @@ import { JsonLd } from '@/components/JsonLd';
 
 import { ZONES, getZone } from '@/lib/zones';
 import { SERVICES } from '@/lib/services';
+import { FAQS, zoneFaqs } from '@/lib/faq';
 import { SITE, OG_IMAGE } from '@/lib/site';
 import { breadcrumbSchema, faqSchema, zoneServiceSchema } from '@/lib/schema';
 
@@ -60,9 +61,14 @@ export default async function ZonePage({ params }: { params: Promise<{ zona: str
 
   const nearby = zone.nearby.map(getZone).filter((z) => z !== undefined);
 
+  /* Las preguntas propias de la zona van primero: son las que responden lo que
+     alguien busca cuando escribe "grúas <cantón>", y las que hacen que esta
+     página no sea una copia de las otras doce. */
+  const faqs = [...zoneFaqs(zone), ...FAQS];
+
   return (
     <>
-      <JsonLd data={[zoneServiceSchema(zone), breadcrumbSchema(crumbs), faqSchema()]} />
+      <JsonLd data={[zoneServiceSchema(zone), breadcrumbSchema(crumbs), faqSchema(faqs)]} />
 
       <PageHero
         crumbs={crumbs}
@@ -246,7 +252,15 @@ export default async function ZonePage({ params }: { params: Promise<{ zona: str
         </section>
       )}
 
-      <Faq />
+      <Faq
+        items={faqs}
+        title={
+          <>
+            Preguntas sobre grúas{' '}
+            <span className="text-flag-red-lit">{zone.inName}</span>
+          </>
+        }
+      />
 
       <FinalCta
         title={

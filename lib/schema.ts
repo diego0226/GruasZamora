@@ -79,7 +79,10 @@ export function localBusinessSchema() {
       opens: '00:00',
       closes: '23:59',
     },
-    sameAs: [SITE.social.facebook, SITE.social.instagram],
+    /* `sameAs` es lo que le confirma a Google que estos perfiles y este sitio
+       son la misma empresa. La ficha de Google Business solo entra si está
+       configurada: un enlace vacío o inventado haría más daño que bien. */
+    sameAs: [SITE.social.facebook, SITE.social.instagram, SITE.googleBusinessUrl].filter(Boolean),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Servicios de grúa y remolque de vehículos',
@@ -192,6 +195,26 @@ export function zoneServiceSchema(zone: Zone) {
       opens: '00:00',
       closes: '23:59',
     },
+  };
+}
+
+/**
+ * Índice de servicios como lista ordenada.
+ *
+ * Le dice a Google que /servicios es una página de catálogo y cuáles son sus
+ * miembros, en vez de dejar que lo deduzca del HTML.
+ */
+export function serviceListSchema(services: readonly Service[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Servicios de grúa y remolque',
+    itemListElement: services.map((service, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: service.name,
+      url: `${SITE.url}/servicios/${service.slug}`,
+    })),
   };
 }
 

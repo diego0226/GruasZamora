@@ -14,7 +14,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { SERVICES, getService } from '@/lib/services';
 import { FEATURED_ZONES } from '@/lib/zones';
 import { SITE, OG_IMAGE } from '@/lib/site';
-import { breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/schema';
+import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
 
 export const dynamicParams = false;
 
@@ -68,7 +68,12 @@ export default async function ServicePage({
 
   return (
     <>
-      <JsonLd data={[serviceSchema(service), breadcrumbSchema(crumbs), faqSchema()]} />
+      {/* Sin FAQPage aquí a propósito: estas preguntas son las generales del
+          sitio y su lugar canónico es el home. Google pide que el FAQPage vaya
+          en la página cuyo contenido principal SON esas preguntas; emitirlo en
+          las 17 URLs era declarar diecisiete veces el mismo bloque. El
+          acordeón se mantiene visible porque al usuario sí le sirve. */}
+      <JsonLd data={[serviceSchema(service), breadcrumbSchema(crumbs)]} />
 
       <PageHero
         crumbs={crumbs}

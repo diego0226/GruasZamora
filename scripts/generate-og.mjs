@@ -34,7 +34,6 @@ const leer = (clave) => {
 };
 
 const TELEFONO = leer('display');
-const UBICACION = leer('display', 1) ?? 'Grecia, Alajuela, Costa Rica';
 
 /* ── Paleta, la misma de globals.css ───────────────────────────── */
 

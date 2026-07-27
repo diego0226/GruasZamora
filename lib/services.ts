@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
     heading: 'Grúa de plataforma en Costa Rica',
     metaTitle: 'Grúa de Plataforma en Costa Rica 24/7',
     metaDescription:
-      'Servicio de grúa de plataforma en Grecia, Occidente y todo Costa Rica. Traslado sin desgaste para vehículos livianos, de lujo, eléctricos y sin llantas. Disponible 24/7.',
+      'Grúa de plataforma en Grecia, Occidente y todo Costa Rica. Traslado sin desgaste para autos de lujo, eléctricos y sin llantas. 24/7. Llame al 8387-6352.',
     icon: 'flatbed',
     summary:
       'La cama se inclina, el vehículo sube completo y viaja con las cuatro llantas fuera del suelo. Cero kilometraje, cero desgaste.',
@@ -79,7 +79,7 @@ export const SERVICES: Service[] = [
     heading: 'Grúa de arrastre y rescate vehicular',
     metaTitle: 'Grúa de Arrastre y Rescate Vehicular 24/7',
     metaDescription:
-      'Grúa de arrastre con sistema under-lift y cabrestante hidráulico para rescate en carretera, parqueos de altura reducida y terrenos difíciles. Grecia, Occidente y todo Costa Rica.',
+      'Grúa de arrastre con under-lift y cabrestante hidráulico para rescate en carretera, parqueos bajos y terreno difícil. Todo Costa Rica. Llame al 8387-6352.',
     icon: 'wrecker',
     summary:
       'Sistema under-lift americano y cabrestante hidráulico para sacar el vehículo de donde una plataforma no entra.',

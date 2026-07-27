@@ -14,8 +14,24 @@ export const SITE = {
   legalName: 'Grúas Zamora Moya',
   tagline: 'Grúas 24/7 en todo Costa Rica',
 
-  /** Dominio de producción. Cambie NEXT_PUBLIC_SITE_URL al comprar el dominio propio. */
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gruas-zamora.vercel.app').replace(/\/$/, ''),
+  /**
+   * Dominio de producción. Alimenta metadataBase, los canonical, el sitemap,
+   * el robots.txt y los @id del JSON-LD: es la URL que el sitio declara como
+   * suya ante Google.
+   *
+   * Va con `www` a propósito. Vercel redirige el apex con 308 hacia www, así
+   * que apuntar el canonical al apex señalaría una URL que redirige — un salto
+   * de más en cada rastreo.
+   *
+   * El valor por defecto es el dominio real, NO un respaldo de desarrollo. Si
+   * dependiera de que alguien recuerde configurar NEXT_PUBLIC_SITE_URL en
+   * Vercel, el día que se olvide el sitio entero le diría a Google que la
+   * versión buena está en otro dominio. Pasó: hasta esta corrección el sitio
+   * publicaba `canonical="https://gruas-zamora.vercel.app"`.
+   *
+   * La variable sigue existiendo para sobrescribirlo en previews.
+   */
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.gruaszamoramoya.com').replace(/\/$/, ''),
 
   phone: {
     /** Formato E.164 — el único que entienden los buscadores y el schema. */
@@ -57,6 +73,20 @@ export const SITE = {
     facebook: 'https://www.facebook.com/gruas.zamora.5873',
     instagram: 'https://www.instagram.com/zamora.gruas/',
   },
+
+  /**
+   * URL del perfil de Google Business, cuando exista.
+   *
+   * Es el enlace más valioso del archivo: para búsquedas locales como
+   * "grúas Grecia", la ficha de Google Business decide el paquete de mapas —
+   * los tres resultados con mapa que salen antes que los enlaces azules— y eso
+   * pesa más que cualquier optimización del sitio.
+   *
+   * Al declararlo en `sameAs`, se le dice a Google que este sitio y esa ficha
+   * son la misma empresa. Se lee de una variable de entorno para que la ficha
+   * se pueda enlazar sin tocar código.
+   */
+  googleBusinessUrl: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL ?? '',
 
   /** Años de trayectoria declarados por la empresa. */
   yearsOfExperience: 30,

@@ -7,6 +7,8 @@
  * y tampoco convence a quien está varado en la carretera.
  */
 
+import type { Zone } from './zones';
+
 export type Faq = { question: string; answer: string };
 
 export const FAQS: Faq[] = [
@@ -61,3 +63,88 @@ export const FAQS: Faq[] = [
       'Sí. Nuestras unidades cuentan con las pólizas del INS correspondientes al servicio. Su vehículo viaja respaldado durante todo el traslado.',
   },
 ];
+
+/* ────────────────────── Preguntas propias de cada zona ────────────────────── */
+
+/**
+ * Genera 3 preguntas específicas de una zona a partir de sus datos reales.
+ *
+ * Por qué existe esto: antes las 13 landings de zona mostraban exactamente las
+ * mismas 10 preguntas —unas 1.500 palabras idénticas— y emitían el mismo
+ * `FAQPage`. Son justo las páginas que tienen que posicionar para "grúas
+ * Grecia", "grúas Naranjo" y demás, y repetir el 40 % del texto entre ellas
+ * diluye precisamente lo que las diferencia.
+ *
+ * Las respuestas se arman con los datos que ya viven en `lib/zones.ts` —rutas
+ * concretas, distritos reales, relación con la base de Grecia—, así que cada
+ * una dice algo verdadero y distinto de esa zona. No es texto hilado para
+ * rellenar: si no aportara información, sería peor que no tenerlo.
+ */
+export function zoneFaqs(zone: Zone): Faq[] {
+  return [
+    { question: arrivalQuestion(zone), answer: arrivalAnswer(zone) },
+    { question: coverageQuestion(zone), answer: coverageAnswer(zone) },
+    { question: routesQuestion(zone), answer: routesAnswer(zone) },
+  ];
+}
+
+/** "a, b y c" — como se enumera en español, no con coma final. */
+function enumerate(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+}
+
+function arrivalQuestion(zone: Zone): string {
+  return zone.kind === 'nacional'
+    ? '¿Cuánto tardan en llegar si estoy lejos de Grecia?'
+    : `¿Cuánto tardan en llegar a ${zone.name}?`;
+}
+
+function arrivalAnswer(zone: Zone): string {
+  if (zone.slug === 'gruas-grecia') {
+    return 'Grecia es la base: aquí guardamos las unidades y desde aquí sale cada servicio. Dentro del cantón el tiempo se mide en minutos, no en horas, porque no hay que cruzar el área metropolitana para empezar a acercarse. En la misma llamada le damos el estimado concreto según el punto exacto donde esté.';
+  }
+
+  if (zone.kind === 'nacional') {
+    return 'Depende de la distancia real de manejo desde Grecia. Costa Rica es pequeña en el mapa y grande en la carretera: dentro de Occidente hablamos de minutos, al resto del Valle Central de menos de una hora, y a Guanacaste, Puntarenas o Limón de varias horas. En la llamada le decimos con franqueza cuánto va a tardar la unidad antes de que salga. Preferimos decirle "tres horas" y cumplir, que prometerle una y dejarlo esperando en la carretera.';
+  }
+
+  if (zone.kind === 'region') {
+    return 'La base está en Grecia, en el centro mismo de la región y con acceso directo a la Interamericana. Para los cantones vecinos —Sarchí, Naranjo, Poás, Atenas— normalmente son minutos; para San Ramón o Zarcero, algo más por la distancia real de manejo. Una empresa que despacha desde San José tiene que cruzar toda el área metropolitana antes de siquiera acercarse a Occidente: nosotros ya estamos adentro.';
+  }
+
+  if (zone.kind === 'provincia') {
+    return `${zone.name} no es nuestra base, así que aquí somos francos: el tiempo depende de la distancia real de manejo desde Grecia y del tráfico del momento. Subimos y bajamos por la Interamericana todos los días y buena parte de nuestros traslados empiezan o terminan en ${zone.name}, sea por talleres especializados, agencias o compras entre particulares. Le damos el estimado en la llamada, antes de despachar la unidad.`;
+  }
+
+  return `Salimos desde Grecia, así que ${zone.name} queda dentro de nuestro radio de respuesta rápida: no tenemos que cruzar el área metropolitana para llegar. El tiempo exacto depende del punto donde esté dentro del cantón, y se lo confirmamos en la llamada junto con el precio, antes de que la unidad salga.`;
+}
+
+function coverageQuestion(zone: Zone): string {
+  if (zone.kind === 'nacional') return '¿De verdad cubren las siete provincias?';
+  if (zone.kind === 'region') return '¿Qué cantones de Occidente cubren?';
+  if (zone.kind === 'provincia') return `¿Qué zonas de ${zone.name} cubren?`;
+  return `¿Qué distritos de ${zone.name} cubren?`;
+}
+
+function coverageAnswer(zone: Zone): string {
+  const places = enumerate([...zone.places]);
+
+  if (zone.kind === 'nacional') {
+    return `Sí, sin excepción: ${places}. La empresa es de Grecia, Alajuela, y eso nos hace la opción más rápida para Occidente, pero atendemos el resto del país con la misma disponibilidad de 24 horas. Que seamos una empresa de Occidente no limita hasta dónde llegamos: solo cambia cuánto tardamos, y eso se lo decimos claro desde la llamada.`;
+  }
+
+  return `Cubrimos ${zone.name} completo. Los puntos donde más nos llaman son ${places}. Si su punto de referencia no aparece en esa lista, llame igual: después de más de 30 años trabajando la zona, es muy probable que lo conozcamos sin que tenga que explicarnos cómo llegar — y eso, en una emergencia, se traduce directamente en minutos.`;
+}
+
+function routesQuestion(zone: Zone): string {
+  return zone.kind === 'nacional'
+    ? '¿En qué carreteras atienden con más frecuencia?'
+    : `¿En qué carreteras de ${zone.name} atienden con más frecuencia?`;
+}
+
+function routesAnswer(zone: Zone): string {
+  const routes = zone.routes.map((r) => `${r.name} — ${r.note}`).join(' ');
+
+  return `${routes} Conocer el terreno no es un detalle de folleto: define qué unidad se despacha —plataforma para el traslado limpio, arrastre con cabrestante para sacar el vehículo de donde quedó— y cuánto tarda en llegar.`;
+}

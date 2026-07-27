@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingContact } from '@/components/layout/FloatingContact';
 import { JsonLd } from '@/components/JsonLd';
+import { Analytics } from '@/components/Analytics';
 import { SITE, TARGET_KEYWORDS, OG_IMAGE } from '@/lib/site';
 import { localBusinessSchema, websiteSchema } from '@/lib/schema';
 
@@ -37,8 +38,12 @@ export const metadata: Metadata = {
     default: 'Grúas 24/7 Grecia, Occidente y Costa Rica | Grúas Zamora',
     template: '%s | Grúas Zamora',
   },
+  /* Google recorta el fragmento alrededor de los 160 caracteres. El teléfono va
+     al final, así que pasarse de largo no solo corta la frase: corta justo el
+     dato por el que existe el sitio. Todas las descripciones se mantienen por
+     debajo de 155. */
   description:
-    'Servicio de grúas 24/7 en Grecia, Occidente y todo Costa Rica. Grúa de plataforma, grúa de arrastre y rescate vehicular. Más de 30 años de experiencia. Llame al 8387-6352.',
+    'Grúas 24/7 en Grecia, Occidente y todo Costa Rica. Plataforma, arrastre y rescate vehicular. Más de 30 años de experiencia. Llame al 8387-6352.',
   keywords: [...TARGET_KEYWORDS],
   applicationName: SITE.name,
   authors: [{ name: SITE.name }],
@@ -76,10 +81,19 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  // Pegue aquí el código de Google Search Console cuando verifique el dominio.
-  verification: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
-    ? { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION }
-    : undefined,
+  /* Verificación de propiedad ante los buscadores. Cada una se emite solo si
+     su variable existe: una etiqueta de verificación con un valor inventado no
+     verifica nada y ensucia el <head>.
+
+     Google  → Search Console, propiedad de prefijo de URL
+     Bing    → Bing Webmaster Tools, que es además el índice detrás de Copilot
+               y de DuckDuckGo */
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_BING_VERIFICATION
+      ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -127,6 +141,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="contenido">{children}</main>
         <Footer />
         <FloatingContact />
+        <Analytics />
       </body>
     </html>
   );

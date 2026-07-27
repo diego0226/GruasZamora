@@ -4,11 +4,17 @@ import { CallButton, WhatsAppButton } from '@/components/ui/CallButton';
 import { FEATURED_ZONES } from '@/lib/zones';
 import { SERVICES } from '@/lib/services';
 
-export const metadata = {
-  title: 'Página no encontrada',
-  robots: { index: false, follow: true },
-};
-
+/**
+ * Aquí NO va un `export const metadata`.
+ *
+ * Next.js solo lee ese export desde `layout.tsx` y `page.tsx`; en `not-found.tsx`
+ * se ignora en silencio, que es lo peor de los dos mundos: parece que se está
+ * marcando la página como noindex y en realidad no se marca nada.
+ *
+ * No hace falta de todos modos. Esta ruta responde con estado HTTP 404, y un
+ * 404 es la señal más fuerte que existe para que Google no indexe una URL —
+ * más que cualquier metaetiqueta. El título de la pestaña lo hereda del layout.
+ */
 export default function NotFound() {
   return (
     <section className="stars-field relative flex min-h-[70vh] items-center bg-night-950 py-20">
