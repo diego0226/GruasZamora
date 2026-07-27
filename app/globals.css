@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   GRÚAS ZAMORA MOYA — Sistema de diseño "American Towing"
+   Paleta tomada directamente de la rotulación de las unidades:
+   azul marino con estrellas, franjas rojo/blanco, cromo y ámbar
+   de la barra de luces.
+   ═══════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Base nocturna (carrocería / asfalto) ─────────────────── */
+  --color-night-950: #04080f;
+  --color-night-900: #08111d;
+  --color-night-800: #0d1c2e;
+  --color-night-700: #142942;
+  --color-night-600: #1d3959;
+  --color-night-500: #2b4d73;
+
+  /* ── Bandera ───────────────────────────────────────────────── */
+  --color-flag-blue: #0a3161;
+  --color-flag-blue-lit: #1b4f8f;
+  --color-flag-red: #c8102e;
+  --color-flag-red-lit: #e8192f;
+  --color-flag-red-deep: #8a0a1f;
+
+  /* ── Cromo / acero ─────────────────────────────────────────── */
+  --color-chrome-50: #f5f8fc;
+  --color-chrome-100: #e6ecf4;
+  --color-chrome-200: #d2dce8;
+  --color-chrome-300: #aebccd;
+  --color-chrome-400: #8797ac;
+  --color-chrome-500: #64748b;
+
+  /* ── Ámbar de la barra de luces (urgencia / 24-7) ─────────── */
+  --color-signal: #ffb020;
+  --color-signal-deep: #b87400;
+
+  /* ── Tipografía ────────────────────────────────────────────── */
+  --font-display: var(--font-anton), "Arial Narrow", "Haettenschweiler", sans-serif;
+  --font-body: var(--font-barlow), system-ui, -apple-system, sans-serif;
+
+  /* ── Radios: chasis, no burbujas ───────────────────────────── */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+
+  /* ── Animaciones ───────────────────────────────────────────── */
+  --animate-rise: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Keyframes ─────────────────────────────────────────────── */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lightbar {
+  0%, 49%   { background-color: var(--color-flag-red); }
+  50%, 100% { background-color: var(--color-flag-blue-lit); }
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* deja aire bajo el header pegajoso al saltar a un ancla */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+    /* Las animaciones de entrada laterales desplazan elementos fuera del
+       viewport antes de revelarse. `clip` los recorta sin crear un contenedor
+       de scroll — que es lo que rompería el header sticky si usáramos
+       `hidden`. */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--color-night-900);
+    color: var(--color-chrome-100);
+    font-family: var(--font-body);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-flag-red);
+    color: #fff;
+  }
+
+  /* Foco visible y consistente para navegación por teclado */
+  :focus-visible {
+    outline: 3px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+  }
+}
+
+/* ── Utilidades de marca ───────────────────────────────────── */
+
+@layer utilities {
+  /* Campo de estrellas — el capó de la unidad */
+  .stars-field {
+    background-image: url("data:image/svg+xml,%3Csvg width='72' height='72' viewBox='0 0 72 72' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M36 14l5.3 16.3h17.2l-13.9 10.1 5.3 16.3L36 46.6l-13.9 10.1 5.3-16.3-13.9-10.1h17.2z' fill='%23ffffff' fill-opacity='0.022'/%3E%3C/svg%3E");
+  }
+
+  /* Placa antideslizante — piso de la plataforma */
+  .tread-plate {
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20L20 0l20 20-20 20zM20 10l5 5-5 5-5-5z' fill='%23ffffff' fill-opacity='0.025' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+
+  /* Franja rojo / blanco / azul: separador de secciones */
+  .flag-rule {
+    background: linear-gradient(
+      90deg,
+      var(--color-flag-red) 0%,
+      var(--color-flag-red) 33.33%,
+      var(--color-chrome-50) 33.33%,
+      var(--color-chrome-50) 66.66%,
+      var(--color-flag-blue-lit) 66.66%,
+      var(--color-flag-blue-lit) 100%
+    );
+  }
+
+  /* Remate de sección: degradado de bandera.
+     Rojo → cromo → azul, difuminado hacia los dos extremos. Cierra la
+     sección igual que la cinta de peligro que había antes, pero sin el
+     rayado rojo/blanco. Hermano suave de .flag-rule, que va en tercios
+     duros y se reserva para el header y el footer. */
+  .flag-fade {
+    height: 2px;
+    width: 100%;
+    opacity: 0.75;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-flag-red) 24%,
+      rgba(245, 248, 252, 0.55) 50%,
+      var(--color-flag-blue-lit) 76%,
+      transparent 100%
+    );
+  }
+
+  /* Letras cromadas del wordmark */
+  .chrome-text {
+    background: linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #cdd9e6 42%,
+      #7f8ea1 52%,
+      #eef3f9 62%,
+      #ffffff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Barra de luces intermitente (indicador 24/7) */
+  .lightbar-dot {
+    animation: lightbar 1.4s steps(1, end) infinite;
+  }
+
+  /* Elevación de tarjeta */
+  .lift {
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+  .lift:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 16px 44px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(232, 25, 47, 0.28);
+  }
+
+  /* ── Revelado al hacer scroll ───────────────────────────────
+     Ojo con el `.js`: la animación solo existe si el script en línea del
+     layout llegó a correr. Sin JavaScript —desactivado, bloqueado por una
+     extensión o caído a medias— estas reglas nunca aplican y el contenido
+     se ve normal. Nunca escondemos texto que dependa de que algo funcione. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .js .reveal-left {
+    opacity: 0;
+    transform: translateX(-44px);
+  }
+  .js .reveal-right {
+    opacity: 0;
+    transform: translateX(44px);
+  }
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    transition:
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .is-revealed {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Respeto por quien pide menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Gana sobre `.js .reveal`: misma especificidad no bastaría, por eso el
+     selector repite la clase .js */
+  .js .reveal,
+  .js .reveal-left,
+  .js .reveal-right {
+    opacity: 1;
+    transform: none;
+  }
+}
