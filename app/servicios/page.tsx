@@ -11,7 +11,7 @@ import { FinalCta } from '@/components/sections/FinalCta';
 import { JsonLd } from '@/components/JsonLd';
 
 import { SERVICES } from '@/lib/services';
-import { SITE } from '@/lib/site';
+import { SITE, OG_IMAGE } from '@/lib/site';
 import { breadcrumbSchema, faqSchema } from '@/lib/schema';
 
 const TITLE = 'Servicios de Grúa en Costa Rica 24/7';
@@ -28,6 +28,7 @@ export const metadata: Metadata = {
     url: `${SITE.url}/servicios`,
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
 };
 

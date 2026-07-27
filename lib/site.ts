@@ -64,6 +64,25 @@ export const SITE = {
   paymentMethods: ['SINPE Móvil', 'Efectivo', 'Transferencia bancaria', 'Factura electrónica'],
 } as const;
 
+/**
+ * Imagen de vista previa al compartir el link (WhatsApp, Facebook, etc.).
+ *
+ * Va como constante porque Next.js NO fusiona `openGraph` campo por campo:
+ * si una página declara su propio bloque `openGraph`, reemplaza entero al del
+ * layout raíz. Toda página que defina `openGraph` tiene que incluir
+ * `images: [OG_IMAGE]` explícitamente o se comparte sin imagen.
+ *
+ * El archivo lo genera scripts/generate-og.mjs — vea ahí por qué es un JPG
+ * estático y no un `next/og`.
+ */
+export const OG_IMAGE = {
+  url: '/og.jpg',
+  width: 1200,
+  height: 630,
+  type: 'image/jpeg',
+  alt: `${SITE.name} — grúas 24/7 en Grecia, Occidente y todo Costa Rica. Teléfono ${SITE.phone.display}.`,
+} as const;
+
 /** Palabras clave objetivo. Se usan en metadata y para revisar cobertura editorial. */
 export const TARGET_KEYWORDS = [
   // Prioridad 1 — donde tenemos que salir de primeros

@@ -13,7 +13,7 @@ import { JsonLd } from '@/components/JsonLd';
 
 import { SERVICES, getService } from '@/lib/services';
 import { FEATURED_ZONES } from '@/lib/zones';
-import { SITE } from '@/lib/site';
+import { SITE, OG_IMAGE } from '@/lib/site';
 import { breadcrumbSchema, faqSchema, serviceSchema } from '@/lib/schema';
 
 export const dynamicParams = false;
@@ -41,7 +41,10 @@ export async function generateMetadata({
       url: `${SITE.url}/servicios/${service.slug}`,
       title: service.metaTitle,
       description: service.metaDescription,
-      images: [{ url: service.image, alt: service.imageAlt }],
+      // Antes iba aquí la fotografía del servicio en crudo, y grua3.jpg pesa
+      // 1.3 MB: WhatsApp descarta la vista previa a ese peso, así que esta
+      // página se compartía sin imagen.
+      images: [OG_IMAGE],
     },
   };
 }

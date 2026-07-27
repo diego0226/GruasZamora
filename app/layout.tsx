@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingContact } from '@/components/layout/FloatingContact';
 import { JsonLd } from '@/components/JsonLd';
-import { SITE, TARGET_KEYWORDS } from '@/lib/site';
+import { SITE, TARGET_KEYWORDS, OG_IMAGE } from '@/lib/site';
 import { localBusinessSchema, websiteSchema } from '@/lib/schema';
 
 /* Tipografía de rotulación: condensada y pesada, como las letras pintadas
@@ -56,12 +56,14 @@ export const metadata: Metadata = {
     title: 'Grúas 24/7 en Grecia, Occidente y todo Costa Rica',
     description:
       'Grúa de plataforma y de arrastre las 24 horas. Empresa de Grecia, servicio en todo Costa Rica. Llame al 8387-6352.',
+    images: [OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Grúas 24/7 en Grecia, Occidente y todo Costa Rica',
     description:
       'Grúa de plataforma y de arrastre las 24 horas en todo Costa Rica. Llame al 8387-6352.',
+    images: ['/og.jpg'],
   },
   robots: {
     index: true,

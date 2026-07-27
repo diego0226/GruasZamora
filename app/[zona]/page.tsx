@@ -13,7 +13,7 @@ import { JsonLd } from '@/components/JsonLd';
 
 import { ZONES, getZone } from '@/lib/zones';
 import { SERVICES } from '@/lib/services';
-import { SITE } from '@/lib/site';
+import { SITE, OG_IMAGE } from '@/lib/site';
 import { breadcrumbSchema, faqSchema, zoneServiceSchema } from '@/lib/schema';
 
 /* Solo existen las zonas del catálogo: cualquier otro slug es un 404 real,
@@ -43,6 +43,7 @@ export async function generateMetadata({
       url: `${SITE.url}/${zone.slug}`,
       title: zone.metaTitle,
       description: zone.metaDescription,
+      images: [OG_IMAGE],
     },
   };
 }
