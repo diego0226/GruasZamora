@@ -4,7 +4,7 @@ import './globals.css';
 
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { MobileCallBar } from '@/components/layout/MobileCallBar';
+import { FloatingContact } from '@/components/layout/FloatingContact';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE, TARGET_KEYWORDS } from '@/lib/site';
 import { localBusinessSchema, websiteSchema } from '@/lib/schema';
@@ -113,7 +113,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="pb-20 antialiased lg:pb-0">
+      <body className="antialiased">
         <a
           href="#contenido"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:bg-flag-red focus:px-4 focus:py-2 focus:font-bold focus:text-white"
@@ -124,7 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="contenido">{children}</main>
         <Footer />
-        <MobileCallBar />
+        <FloatingContact />
       </body>
     </html>
   );
