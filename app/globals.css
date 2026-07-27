@@ -82,6 +82,18 @@
     color: var(--color-chrome-100);
     font-family: var(--font-body);
     text-rendering: optimizeLegibility;
+    /* Sí, repite el `overflow-x` del <html>, y hacen falta los dos.
+       El overflow declarado en el elemento raíz se PROPAGA al viewport y el
+       <html> queda comportándose como `visible`: por eso el de arriba impide
+       el scroll horizontal pero no contiene a los hijos que se salen. El que
+       recorta de verdad es este. Con solo uno de los dos, el ancho del
+       viewport crece con los elementos aún no revelados y todo lo que sea
+       `position: fixed` anclado a la derecha —los accesos flotantes— queda
+       corrido fuera de pantalla hasta que terminan de revelarse.
+       Se usa `clip` y no `hidden` a propósito: `overflow-x: clip` deja el eje
+       Y en `visible` en lugar de forzarlo a `auto`, así que no se crea un
+       contenedor de scroll y el header sigue siendo sticky. */
+    overflow-x: clip;
   }
 
   ::selection {
