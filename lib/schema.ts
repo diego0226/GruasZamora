@@ -24,6 +24,9 @@ export function localBusinessSchema() {
     '@type': ['LocalBusiness', 'AutomotiveBusiness'],
     '@id': ID_BUSINESS,
     name: SITE.name,
+    /* Lo que ata la búsqueda "Grúas Zamora" a esta empresa y no a los otros
+       negocios con nombre parecido. Ver la nota en lib/site.ts. */
+    alternateName: [...SITE.alternateNames],
     legalName: SITE.legalName,
     description:
       'Servicio de grúas 24/7 en Costa Rica. Remolque con grúa de plataforma y de arrastre, y rescate vehicular. Empresa de Grecia, Alajuela, con cobertura en todo el territorio nacional.',
@@ -232,6 +235,16 @@ export function breadcrumbSchema(trail: { name: string; path: string }[]) {
   };
 }
 
+/**
+ * WebSite — de aquí saca Google el "nombre del sitio", el texto que sale sobre
+ * la URL en cada resultado en lugar del dominio pelado.
+ *
+ * Es el único lugar donde ese nombre se declara: Google documenta que lo toma
+ * del `name` de este bloque, y que usa `alternateName` cuando el nombre largo
+ * no cabe. Por eso el corto va aquí y no solo en la ficha del negocio — para la
+ * búsqueda "Grúas Zamora", que el resultado se rotule con esas dos palabras es
+ * la mitad de ganarla.
+ */
 export function websiteSchema() {
   return {
     '@context': 'https://schema.org',
@@ -239,6 +252,7 @@ export function websiteSchema() {
     '@id': `${SITE.url}/#website`,
     url: SITE.url,
     name: SITE.name,
+    alternateName: [...SITE.alternateNames],
     inLanguage: 'es-CR',
     publisher: { '@id': ID_BUSINESS },
   };

@@ -15,6 +15,30 @@ export const SITE = {
   tagline: 'Grúas 24/7 en todo Costa Rica',
 
   /**
+   * Todas las formas en que la gente nombra la empresa.
+   *
+   * Buscar "Grúas Zamora" en Costa Rica devuelve varias empresas distintas:
+   * Grúas Diego Zamora, Grúas Zamora Zamora y las Grúas Zamoranas de México,
+   * más un par de fichas de directorio con el nombre legal. Con tanto homónimo,
+   * Google no puede deducir por su cuenta cuál de todas es este sitio.
+   *
+   * `alternateName` en el JSON-LD es la manera de decírselo explícitamente: que
+   * la entidad que se llama "Grúas Zamora Moya" también responde a "Grúas
+   * Zamora" a secas. Sin esto, la búsqueda de marca compite contra los
+   * homónimos en igualdad de condiciones.
+   *
+   * Van con y sin tilde porque casi nadie la escribe al teclear en el celular,
+   * y el nombre legal porque es el que aparece en los directorios existentes.
+   */
+  alternateNames: [
+    'Grúas Zamora',
+    'Gruas Zamora',
+    'Gruas Zamora Moya',
+    'Grúas Zamora Moya S.A.',
+    'Gruas Zamora Moya S.A.',
+  ],
+
+  /**
    * Dominio de producción. Alimenta metadataBase, los canonical, el sitemap,
    * el robots.txt y los @id del JSON-LD: es la URL que el sitio declara como
    * suya ante Google.

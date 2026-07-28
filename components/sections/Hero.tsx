@@ -66,9 +66,14 @@ export function Hero({
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-chrome-200 sm:text-xl">
+            {/* El nombre abre el párrafo solo en la portada: es la única página
+                que pelea la búsqueda de marca, y el H1 —que va por la palabra
+                clave genérica— no lo nombra. Las demás páginas pasan su propio
+                `lead` y no lo repiten. */}
             {lead ?? (
               <>
-                Más de {SITE.yearsOfExperience} años levantando carros en la carretera.
+                <strong className="font-semibold text-chrome-100">Grúas Zamora Moya</strong>: más
+                de {SITE.yearsOfExperience} años levantando carros en la carretera.
                 Plataforma o arrastre, de día o de madrugada. Usted llama, nosotros salimos.
               </>
             )}

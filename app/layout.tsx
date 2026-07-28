@@ -35,15 +35,25 @@ export const metadata: Metadata = {
     // Google corta el título alrededor de los 60 caracteres. El sufijo de
     // marca lo pone la plantilla, así que los títulos de cada página NO deben
     // repetirlo — se duplicaría y se perdería la palabra clave en el corte.
-    default: 'Grúas 24/7 Grecia, Occidente y Costa Rica | Grúas Zamora',
+    //
+    // La portada abre con el nombre completo a propósito. Es la única página
+    // que compite por la búsqueda de marca "Grúas Zamora", y esa búsqueda la
+    // pelean varios homónimos; el nombre en la primera posición del título es
+    // la señal más directa de que este es el resultado que se busca. "Grúas"
+    // sigue siendo la primera palabra, así que la consulta genérica no pierde.
+    default: 'Grúas Zamora Moya | Grúas 24/7 en Grecia y todo Costa Rica',
     template: '%s | Grúas Zamora',
   },
   /* Google recorta el fragmento alrededor de los 160 caracteres. El teléfono va
      al final, así que pasarse de largo no solo corta la frase: corta justo el
      dato por el que existe el sitio. Todas las descripciones se mantienen por
-     debajo de 155. */
+     debajo de 155.
+
+     Empieza con el nombre porque Google resalta en negrita las palabras de la
+     búsqueda dentro del fragmento: quien busque la marca la ve destacada en la
+     primera línea. */
   description:
-    'Grúas 24/7 en Grecia, Occidente y todo Costa Rica. Plataforma, arrastre y rescate vehicular. Más de 30 años de experiencia. Llame al 8387-6352.',
+    'Grúas Zamora Moya: grúas 24/7 en Grecia y todo Costa Rica. Plataforma, arrastre y rescate vehicular. Más de 30 años de experiencia. Llame al 8387-6352.',
   keywords: [...TARGET_KEYWORDS],
   applicationName: SITE.name,
   authors: [{ name: SITE.name }],
@@ -58,14 +68,14 @@ export const metadata: Metadata = {
     locale: 'es_CR',
     siteName: SITE.name,
     url: SITE.url,
-    title: 'Grúas 24/7 en Grecia, Occidente y todo Costa Rica',
+    title: 'Grúas Zamora Moya — Grúas 24/7 en Grecia y todo Costa Rica',
     description:
       'Grúa de plataforma y de arrastre las 24 horas. Empresa de Grecia, servicio en todo Costa Rica. Llame al 8387-6352.',
     images: [OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Grúas 24/7 en Grecia, Occidente y todo Costa Rica',
+    title: 'Grúas Zamora Moya — Grúas 24/7 en Grecia y todo Costa Rica',
     description:
       'Grúa de plataforma y de arrastre las 24 horas en todo Costa Rica. Llame al 8387-6352.',
     images: ['/og.jpg'],
