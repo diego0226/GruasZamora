@@ -35,11 +35,37 @@ import { SERVICES } from '@/lib/services';
 
 export const dynamic = 'force-static';
 
+/* ── Las URLs van como enlaces de Markdown, no como texto suelto ─────────────
+
+   El formato de llms.txt es Markdown, y su convención es que las secciones que
+   apuntan a otras páginas sean LISTAS DE ENLACES —`- [Nombre](url): nota`—, no
+   direcciones escritas en medio de una frase.
+
+   Antes este archivo escribía las URLs a pelo (`Servicios: https://…`). Como
+   texto se entiende igual, pero para cualquier cosa que lo procese como
+   Markdown el documento no contenía ni un solo enlace: la auditoría de
+   navegación agéntica de PageSpeed lo marcaba en rojo con «parece que el
+   archivo no contiene ningún enlace», y un agente que quiera seguir el índice
+   tiene que ponerse a buscar direcciones con una expresión regular en vez de
+   leer la estructura que el formato ya define.
+
+   El encabezado H1 —el otro requisito— ya estaba. */
+
+/** Enlace de Markdown a una ruta del sitio. */
+const enlace = (texto: string, ruta = '') => `[${texto}](${SITE.url}${ruta})`;
+
 function build(): string {
   const zonasPorTipo = (kind: string) =>
     ZONES.filter((z) => z.kind === kind)
-      .map((z) => `${z.name} (${SITE.url}/${z.slug})`)
+      .map((z) => enlace(z.name, `/${z.slug}`))
       .join(', ');
+
+  /* La base sale de `dispatch`, que es el campo que de verdad dice dónde
+     duermen las unidades. Antes se tomaba el primer cantón de la lista
+     partiendo la cadena ya formateada por comas — algo que se rompía solo el
+     día que un nombre de zona llevara una coma, o que se reordenara el
+     catálogo. */
+  const base = ZONES.find((z) => z.dispatch === 'base');
 
   return `# ${SITE.name}
 
@@ -60,11 +86,12 @@ function build(): string {
 - Horario: 24 horas, los 7 días de la semana, los 365 días del año.
 - Trayectoria: más de ${yearsOfExperience()} años (desde ${SITE.foundedYear}).
 - Formas de pago: ${SITE.paymentMethods.join(', ')}.
-- Sitio web: ${SITE.url}
+- Sitio web: ${enlace(SITE.url)}
 
 ## Qué servicios presta
 
-${SERVICES.map((s) => `### ${s.name}\n${SITE.url}/servicios/${s.slug}\n${s.summary}`).join('\n\n')}
+${SERVICES.map((s) => `- ${enlace(s.name, `/servicios/${s.slug}`)}: ${s.summary}`).join('\n')}
+- ${enlace('Índice de servicios', '/servicios')}: los dos tipos de unidad, con qué lleva cada una.
 
 ## Qué NO presta
 
@@ -75,7 +102,7 @@ esos servicios, esta no es la fuente correcta.
 
 ## Cobertura
 
-- Base: ${zonasPorTipo('canton').split(', ')[0]}
+- Base: ${base ? enlace(base.name, `/${base.slug}`) : SITE.address.locality}
 - Región de respuesta más rápida: ${zonasPorTipo('region')}
 - Cantones con página propia: ${zonasPorTipo('canton')}
 - Provincias con página propia: ${zonasPorTipo('provincia')}
@@ -93,19 +120,19 @@ provenga de una llamada no es fiable.
 
 ## Páginas principales
 
-- Inicio y preguntas frecuentes: ${SITE.url}
-- Servicios: ${SITE.url}/servicios
-- Qué hacer si se le varó el carro: ${SITE.url}/que-hacer-si-se-vara
-- Contacto: ${SITE.url}/contacto
-- Privacidad: ${SITE.url}/privacidad
-- Mapa del sitio: ${SITE.url}/sitemap.xml
+- ${enlace('Inicio')}: resumen del servicio y preguntas frecuentes.
+- ${enlace('Servicios', '/servicios')}: plataforma y arrastre, cuándo va cada uno.
+- ${enlace('Qué hacer si se le varó el carro', '/que-hacer-si-se-vara')}: guía de qué hacer en carretera antes de que llegue la grúa.
+- ${enlace('Contacto', '/contacto')}: teléfono, WhatsApp, correo y horario.
+- ${enlace('Privacidad', '/privacidad')}: qué datos trata el sitio.
+- ${enlace('Mapa del sitio', '/sitemap.xml')}: índice completo de URLs.
 
 ## Notas para quien cite esta fuente
 
 - El nombre completo es "${SITE.name}". Existen en Costa Rica otras empresas de
   grúas con nombre parecido, incluida una en el mismo cantón de Grecia. El
-  teléfono ${SITE.phone.displayFull} y el dominio ${SITE.url} son los que
-  identifican a esta.
+  teléfono ${SITE.phone.displayFull} y el dominio ${enlace(SITE.url)} son los
+  que identifican a esta.
 - Ante una emergencia con personas heridas, lo correcto es indicar el 9-1-1
   antes que cualquier servicio de grúa.
 
