@@ -39,6 +39,75 @@ const VARIANTS = {
 const CALLBACKS = new WeakMap<Element, () => void>();
 let observer: IntersectionObserver | null = null;
 
+/* ── Alta en un solo lote, para no provocar recálculos de diseño ─────────────
+
+   Cada Reveal necesita saber si ya está en pantalla al montar, y eso se
+   averigua con `getBoundingClientRect()`. El problema no es la medición: es el
+   orden en que se hacían.
+
+   React ejecuta los efectos de los ~40 Reveal de la página uno detrás de otro,
+   así que la secuencia era medir → escribir la clase → medir → escribir la
+   clase → … Cada escritura invalida el diseño calculado, y la medición
+   siguiente obliga al navegador a rehacerlo entero antes de poder responder.
+   Cuarenta recálculos forzados de una página larga, en un teléfono de gama
+   media, en el momento exacto en que también está hidratando React. Es lo que
+   PageSpeed reporta como «redistribución forzada».
+
+   La solución no es medir menos, es separar las fases: los elementos se
+   apuntan en una cola y se procesan juntos en una microtarea —que corre
+   después de todos los efectos y antes del primer pintado, así que nadie ve
+   nada parpadear—. Primero se miden TODOS, después se escribe. Un recálculo en
+   vez de cuarenta, con el mismo resultado visual. */
+
+const PENDIENTES: HTMLElement[] = [];
+let loteProgramado = false;
+
+function encolar(el: HTMLElement) {
+  PENDIENTES.push(el);
+  if (loteProgramado) return;
+  loteProgramado = true;
+  queueMicrotask(procesarLote);
+}
+
+function desencolar(el: HTMLElement) {
+  const i = PENDIENTES.indexOf(el);
+  if (i !== -1) PENDIENTES.splice(i, 1);
+}
+
+function procesarLote() {
+  loteProgramado = false;
+  const lote = PENDIENTES.splice(0);
+  if (lote.length === 0) return;
+
+  const obs = getObserver();
+  const alto = window.innerHeight;
+
+  // Fase 1 — solo lecturas. El navegador recalcula el diseño una vez, en la
+  // primera, y sirve las demás desde ese mismo cálculo.
+  const enPantalla = lote.map((el) => {
+    if (!el.isConnected) return null;
+    // Sin IntersectionObserver no animamos: se muestra todo de una vez.
+    if (!obs) return true;
+    const r = el.getBoundingClientRect();
+    return r.top < alto && r.bottom > 0;
+  });
+
+  // Fase 2 — solo escrituras.
+  lote.forEach((el, i) => {
+    const visible = enPantalla[i];
+    if (visible === null) return; // se desmontó entre el alta y el lote
+
+    if (visible) {
+      /* Ya está arriba del pliegue: se revela sin esperar al observador. Un
+         CTA no puede quedar invisible ni una fracción de segundo. */
+      CALLBACKS.delete(el);
+      el.classList.add('is-revealed');
+    } else {
+      obs!.observe(el);
+    }
+  });
+}
+
 function getObserver(): IntersectionObserver | null {
   if (typeof IntersectionObserver === 'undefined') return null;
 
@@ -83,31 +152,16 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    const show = () => el.classList.add('is-revealed');
-
-    const obs = getObserver();
-
-    // Navegador sin IntersectionObserver: mostramos y no animamos.
-    if (!obs) {
-      show();
-      return;
-    }
-
-    // Si el elemento ya está en pantalla al montar (todo lo que cae arriba del
-    // pliegue), lo mostramos sin esperar al observer: un CTA no puede quedar
-    // invisible ni una fracción de segundo.
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      show();
-      return;
-    }
-
-    CALLBACKS.set(el, show);
-    obs.observe(el);
+    /* No se mide nada aquí: solo se deja el elemento en la cola. La decisión de
+       si ya está en pantalla la toma `procesarLote`, con todos los hermanos a
+       la vez. Ver la nota de arriba. */
+    CALLBACKS.set(el, () => el.classList.add('is-revealed'));
+    encolar(el);
 
     return () => {
       CALLBACKS.delete(el);
-      obs.unobserve(el);
+      desencolar(el);
+      observer?.unobserve(el);
     };
   }, []);
 

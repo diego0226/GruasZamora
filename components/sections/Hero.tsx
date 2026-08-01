@@ -27,14 +27,36 @@ export function Hero({
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-night-950">
-      {/* Fotografía real de la flotilla — LCP, por eso va con priority */}
+      {/* Fotografía real de la flotilla — es el elemento LCP.
+
+          `priority` y `fetchPriority` NO son lo mismo, y hacen falta los dos:
+
+          · `priority` hace que Next emita el `<link rel="preload">` en el
+            `<head>`, para que el navegador descubra la foto sin esperar a
+            parsear el HTML ni el CSS.
+          · `fetchPriority="high"` es lo que le dice que la baje ANTES que el
+            resto. Sin él, el navegador clasifica una precarga de imagen como
+            prioridad BAJA y la deja detrás de las fuentes, el CSS y los
+            scripts. Comprobado en el HTML servido: ni el `<img>` ni el
+            `<link>` llevaban el atributo.
+
+          Hasta Next 14 `priority` implicaba `fetchPriority="high"`. En Next 16
+          ya no: son props independientes (ver `getImgProps` en
+          next/dist/shared/lib/get-img-props.js). El sitio se quedó pidiendo la
+          imagen más importante de la página con la prioridad más baja.
+
+          `quality={50}`, no 70: esta foto va al 70 % de opacidad, tapada por
+          dos degradados y el campo de estrellas. A ese nivel el detalle fino no
+          se ve, y son ~9 KB menos en la ruta crítica. Las fotos de la flotilla
+          —que sí se miran de frente— siguen en 70. */}
       <Image
         src={image}
         alt={imageAlt}
         fill
         priority
+        fetchPriority="high"
         sizes="100vw"
-        quality={70}
+        quality={50}
         className="object-cover object-[68%_center] opacity-70"
       />
 

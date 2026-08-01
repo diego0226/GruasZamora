@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { enviarEvento, type Medicion } from '@/lib/analytics';
 
 /**
  * Registra los clics en los botones de contacto.
@@ -27,25 +28,16 @@ import { usePathname } from 'next/navigation';
  *
  * No carga nada, no manda peticiones propias y no usa cookies: solo deja el
  * evento en la cola que GA4 o GTM ya estén leyendo. Si no hay ninguna
- * configurada —que es el estado actual comprobado en producción— la función no
- * hace absolutamente nada y el usuario no paga ni un byte por esto.
+ * configurada, este componente ni siquiera se renderiza —lo decide
+ * components/Analytics.tsx— y el usuario no paga ni un byte por esto.
+ *
+ * ⚠️ El envío en sí vive en lib/analytics.ts, no aquí. Antes este archivo
+ * elegía el formato mirando qué global existía en `window` y se equivocaba
+ * siempre que la medición era GA4 directo: los clics se enviaban con la forma
+ * de GTM y no llegaban a ningún informe. La nota completa está en ese archivo.
  */
 
 type Dataset = Record<string, string | undefined>;
-
-/**
- * Vista mínima de los globales que instalan GA4 y GTM.
- *
- * No se declaran con `declare global`: `@next/third-parties` ya amplía
- * `Window` con su propia firma de `dataLayer`, y una segunda declaración con
- * un tipo distinto rompe la compilación. Un cast local en el único punto donde
- * se tocan es más honesto — deja claro que son globales de un tercero y no
- * algo que este proyecto controle.
- */
-type VentanaConMedicion = Window & {
-  dataLayer?: unknown[];
-  gtag?: (...args: unknown[]) => void;
-};
 
 /** Traduce el `data-cta` del elemento al canal de contacto que representa. */
 function canal(cta: string): string {
@@ -55,7 +47,7 @@ function canal(cta: string): string {
   return 'otro';
 }
 
-export function CtaTracking() {
+export function CtaTracking({ modo }: { modo: Medicion }) {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -67,28 +59,18 @@ export function CtaTracking() {
       const cta = (el.dataset as Dataset).cta;
       if (!cta) return;
 
-      const payload = {
+      enviarEvento(modo, 'contacto', {
         /* Nombres en español porque son los que va a leer quien mire el panel,
            que no es quien escribió este archivo. */
         metodo: canal(cta),
         ubicacion: cta,
         pagina: pathname,
-      };
-
-      /* GTM: se deja en la cola. GA4 directo: se manda como evento.
-         Nunca los dos — ver components/Analytics.tsx. */
-      const w = window as VentanaConMedicion;
-
-      if (w.dataLayer) {
-        w.dataLayer.push({ event: 'contacto', ...payload });
-      } else if (typeof w.gtag === 'function') {
-        w.gtag('event', 'contacto', payload);
-      }
+      });
     };
 
     document.addEventListener('click', onClick, { capture: true });
     return () => document.removeEventListener('click', onClick, { capture: true });
-  }, [pathname]);
+  }, [pathname, modo]);
 
   return null;
 }

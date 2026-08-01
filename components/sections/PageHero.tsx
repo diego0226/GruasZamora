@@ -25,13 +25,18 @@ export function PageHero({
 }) {
   return (
     <section className="relative isolate overflow-hidden bg-night-950">
+      {/* Mismo caso que el hero de la portada: `priority` solo emite la
+          precarga, `fetchPriority` es lo que le da prioridad real. Ver la nota
+          larga en components/sections/Hero.tsx. Aquí la foto va aún más
+          apagada (45 % de opacidad), así que el 50 de calidad sobra. */}
       <Image
         src={image}
         alt={imageAlt}
         fill
         priority
+        fetchPriority="high"
         sizes="100vw"
-        quality={70}
+        quality={50}
         className="object-cover object-[70%_center] opacity-45"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-night-950 via-night-950/90 to-night-950/50" />

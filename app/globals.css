@@ -81,7 +81,13 @@
     background-color: var(--color-night-900);
     color: var(--color-chrome-100);
     font-family: var(--font-body);
-    text-rendering: optimizeLegibility;
+    /* Ya NO se declara `text-rendering: optimizeLegibility`.
+       Esa propiedad obliga al navegador a resolver kerning y ligaduras
+       opcionales de TODO el texto del documento antes de pintarlo, y estas
+       páginas son largas. Los navegadores actuales ya aplican kerning y
+       ligaduras estándar por su cuenta, así que se pagaba trabajo extra de
+       hilo principal justo en el primer pintado a cambio de un resultado
+       visualmente idéntico. */
     /* Sí, repite el `overflow-x` del <html>, y hacen falta los dos.
        El overflow declarado en el elemento raíz se PROPAGA al viewport y el
        <html> queda comportándose como `visible`: por eso el de arriba impide

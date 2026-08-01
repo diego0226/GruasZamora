@@ -11,7 +11,25 @@ import { SITE, TARGET_KEYWORDS, OG_IMAGE } from '@/lib/site';
 import { localBusinessSchema, websiteSchema, primaryImageSchema } from '@/lib/schema';
 
 /* Tipografía de rotulación: condensada y pesada, como las letras pintadas
-   en las unidades. Se autohospedan — cero peticiones a Google en runtime. */
+   en las unidades. Se autohospedan — cero peticiones a Google en runtime.
+
+   ── Qué se precarga y qué no ────────────────────────────────────────────────
+
+   `next/font` emite un `<link rel="preload">` por CADA archivo de fuente, y el
+   navegador trata `as="font"` como prioridad ALTA. Con Anton (1 archivo) y
+   Barlow (4 pesos) eso eran cinco descargas de máxima prioridad —74 KB— metidas
+   en el `<head>` ANTES de la precarga de la foto del hero, que es el elemento
+   LCP. Medido en producción: los cinco woff2 salían a la red primero y la
+   imagen quedaba esperando su turno.
+
+   Anton sigue precargada: pinta el H1, el bloque de texto más grande de la
+   pantalla, y verlo cambiar de tipografía a mitad de carga se nota.
+
+   Barlow NO. Se sigue descargando —está en el CSS igual— pero el navegador la
+   pide cuando le toca pintar texto de cuerpo, ya sin competirle a la foto.
+   Mientras llega se ve la fuente del sistema, y como `next/font` genera un
+   fallback con `size-adjust` calculado a partir de las métricas reales de
+   Barlow, el cambio no mueve nada de sitio: el CLS se mantiene en 0. */
 const anton = Anton({
   subsets: ['latin'],
   weight: '400',
@@ -27,6 +45,7 @@ const barlow = Barlow({
   weight: ['400', '600', '700', '800'],
   variable: '--font-barlow',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {

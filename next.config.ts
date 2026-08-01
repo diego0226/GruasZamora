@@ -81,10 +81,17 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1920, 2560],
-    // Next 16 exige declarar los niveles de calidad permitidos. Usamos uno
-    // solo (70) en todas las fotos: a este tamaño es indistinguible de 75 y
-    // pesa bastante menos, que es lo que importa en datos móviles.
-    qualities: [70],
+    // Next 16 exige declarar los niveles de calidad permitidos; una petición
+    // con un valor fuera de esta lista responde 400.
+    //
+    // 70 → fotos que el visitante mira de frente (la galería de la flotilla).
+    //      A ese tamaño es indistinguible de 75 y pesa bastante menos, que es
+    //      lo que importa en datos móviles.
+    // 50 → fondos de hero. Van al 45-70 % de opacidad y debajo de dos
+    //      degradados: el detalle fino no llega a verse nunca. Es la imagen
+    //      LCP, así que cada KB que se le quita se descuenta directo de la
+    //      métrica que más pesa en la puntuación de rendimiento.
+    qualities: [50, 70],
     // Las fotos de la flotilla no cambian. Un año de caché en el CDN evita
     // reprocesar cada variante AVIF/WebP en cada despliegue.
     minimumCacheTTL: 31536000,
