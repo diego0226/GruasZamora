@@ -6,7 +6,11 @@
  * No agregue aquí servicios que no se presten (cambio de llanta, paso de
  * corriente, combustible): anunciarlos y no darlos genera reclamos y le cuesta
  * la reseña.
+ *
+ * ⚠️ Módulo de servidor. Los componentes de cliente importan de `lib/nav.ts`.
  */
+
+import { SERVICE_LINKS, assertNavParity } from './nav';
 
 export type IconKey = 'flatbed' | 'wrecker';
 
@@ -27,6 +31,15 @@ export type Service = {
   specs: string[];
   /** Situaciones concretas donde aplica este servicio */
   cases: { title: string; body: string }[];
+  /**
+   * Preguntas propias de este servicio.
+   *
+   * Existen para que las páginas de servicio dejen de repetir la FAQ general
+   * del sitio. Las diez preguntas generales viven en el home y ahí se quedan;
+   * aquí solo van preguntas cuya respuesta es específica de esta unidad. Ver
+   * la nota de `lib/faq.ts`.
+   */
+  faqs: { question: string; answer: string }[];
   image: string;
   imageAlt: string;
 };
@@ -67,6 +80,28 @@ export const SERVICES: Service[] = [
       {
         title: 'Traslados largos entre provincias',
         body: 'Para mover un vehículo de Grecia a Guanacaste o al Caribe, la plataforma no le suma kilometraje al odómetro ni desgaste al tren motriz.',
+      },
+    ],
+    faqs: [
+      {
+        question: '¿Cuándo necesito plataforma y no arrastre?',
+        answer:
+          'Siempre que el vehículo no deba rodar durante el traslado. Es obligatorio en eléctricos e híbridos, y es lo correcto en autos de lujo, deportivos con poca altura libre, vehículos sin llantas o sin frenos, y en cualquier carro que salga de una colisión. También conviene en traslados largos entre provincias, porque no le suma kilómetros al odómetro. Si nos describe el vehículo y qué le pasó, le decimos por teléfono cuál de las dos unidades corresponde antes de despacharla.',
+      },
+      {
+        question: '¿Pueden subir un vehículo que no arranca ni rueda?',
+        answer:
+          'Sí. La plataforma trae cabrestante justamente para eso: el cable lo sube completo a la cama sin arrastrarlo por el pavimento. Da igual si el motor está fundido, si tiene una llanta destruida, si quedó con el eje partido o si lleva años guardado en un garaje sin moverse.',
+      },
+      {
+        question: '¿Un auto deportivo o muy bajo se raspa al subir?',
+        answer:
+          'No, porque la unidad trae rampas para altura libre reducida y la cama se inclina hidráulicamente para suavizar el ángulo de carga. Es exactamente el escenario donde un arrastre mal hecho deja el faldón o el parachoques raspado, y la razón por la que estos vehículos se cargan en plataforma y no de otra forma.',
+      },
+      {
+        question: '¿Cómo se sujeta el vehículo durante el viaje?',
+        answer:
+          'Con sujeción de cuatro puntos, combinando fajas y cadenas. Las cuatro llantas viajan fuera del suelo, así que durante el traslado no se calienta la transmisión ni se desgasta el tren motriz. Las unidades están aseguradas con las pólizas del INS correspondientes al servicio.',
       },
     ],
     image: '/grua3.jpg',
@@ -110,11 +145,36 @@ export const SERVICES: Service[] = [
         body: 'Fincas, cafetales y caminos vecinales de Occidente: tracción y cable para sacar el vehículo hasta terreno firme.',
       },
     ],
+    faqs: [
+      {
+        question: '¿En qué casos entra el arrastre donde no entra una plataforma?',
+        answer:
+          'En sótanos y parqueos subterráneos con techo bajo, en las calles angostas de los cuadrantes —los centros de Grecia, Sarchí o Naranjo—, y en caminos de lastre y barro hacia fincas y cafetales. El radio de giro de la unidad de arrastre es aproximadamente la mitad que el de una cama plana, y esa diferencia es la que decide si el vehículo se puede sacar o no.',
+      },
+      {
+        question: '¿El sistema under-lift daña la carrocería o el chasis?',
+        answer:
+          'No, porque no los toca. El under-lift levanta el vehículo tomándolo por las llantas, nunca por el parachoques ni por el chasis, que es justo el error que deja daños en un remolque improvisado con eslinga o gancho.',
+      },
+      {
+        question: '¿Pueden sacar un vehículo que se salió de la carretera?',
+        answer:
+          'Sí, para eso está el cabrestante hidráulico. Salidas de vía en la Interamericana, cunetas, taludes y vehículos atascados en pendiente con barro: el cable lo recupera hasta terreno firme y ahí se decide si se traslada o si puede seguir por sus propios medios. Es el rescate más frecuente en la cuesta de Zarcero y en los accesos hacia Toro Amarillo.',
+      },
+      {
+        question: '¿Sirve el arrastre para un vehículo eléctrico o híbrido?',
+        answer:
+          'No, y es importante: los fabricantes de eléctricos prohíben remolcarlos con las llantas motrices en el suelo, porque al girar el motor eléctrico genera corriente y puede dañar el sistema de tracción. Un eléctrico o un híbrido se mueve en plataforma, cargado completo. Si nos dice qué vehículo es, despachamos la unidad correcta a la primera.',
+      },
+    ],
     image: '/grua7.jpg',
     imageAlt:
       'Unidad de arrastre Super Duty de Grúas Zamora Moya con bandera de Estados Unidos remolcando una camioneta en Costa Rica',
   },
 ];
+
+/* Revienta el build si alguien agrega un servicio y olvida `lib/nav.ts`. */
+assertNavParity(SERVICES, SERVICE_LINKS, 'lib/services.ts');
 
 export const SERVICE_SLUGS = SERVICES.map((s) => s.slug);
 

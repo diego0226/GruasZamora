@@ -85,12 +85,20 @@ export const SITE = {
     display: 'Grecia, Alajuela, Costa Rica',
   },
 
-  /** Coordenadas del centro de Grecia, cantón base de operaciones. */
+  /**
+   * Coordenadas del centro de Grecia, cantón base de operaciones.
+   *
+   * Ya NO se publica un `GeoCircle` con radio: el que había declaraba 200 km
+   * desde Grecia, y Costa Rica mide unos 460 km de punta a punta. El círculo
+   * dejaba fuera medio Guanacaste, todo el Pacífico Sur y buena parte de Limón
+   * —justo las provincias que el sitio dice atender en el home y en la página
+   * nacional—. Un radio que contradice el texto es peor que no declarar radio:
+   * la cobertura real se expresa con `areaServed`, que sí admite el país
+   * entero. Ver lib/schema.ts.
+   */
   geo: {
     latitude: 10.0722,
     longitude: -84.3136,
-    /** Radio de servicio en metros — cobertura nacional. */
-    serviceRadius: 200000,
   },
 
   social: {
@@ -112,11 +120,31 @@ export const SITE = {
    */
   googleBusinessUrl: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL ?? '',
 
-  /** Años de trayectoria declarados por la empresa. */
-  yearsOfExperience: 30,
+  /**
+   * Año en que arrancó la operación, según la empresa.
+   *
+   * Antes esto era `yearsOfExperience: 30` a pelo. El problema de un número
+   * fijo es que envejece en silencio: en 2030 el sitio seguiría diciendo «más
+   * de 30 años» cuando ya serían 34, y una afirmación de trayectoria
+   * desactualizada es exactamente el tipo de dato que erosiona la confianza
+   * —y que un modelo de IA cita mal—. Derivarlo del año de fundación mantiene
+   * la cifra correcta sola. Hoy da 30, igual que antes: el texto no cambia.
+   */
+  foundedYear: 1996,
 
   paymentMethods: ['SINPE Móvil', 'Efectivo', 'Transferencia bancaria', 'Factura electrónica'],
 } as const;
+
+/**
+ * Años de trayectoria, calculados en cada compilación.
+ *
+ * Es una función y no una constante de módulo para que el valor se resuelva
+ * durante el prerenderizado de cada despliegue y no quede congelado en el
+ * primer import.
+ */
+export function yearsOfExperience(): number {
+  return new Date().getFullYear() - SITE.foundedYear;
+}
 
 /**
  * Imagen de vista previa al compartir el link (WhatsApp, Facebook, etc.).
@@ -135,6 +163,28 @@ export const OG_IMAGE = {
   height: 630,
   type: 'image/jpeg',
   alt: `${SITE.name} — grúas 24/7 en Grecia, Occidente y todo Costa Rica. Teléfono ${SITE.phone.display}.`,
+} as const;
+
+/**
+ * Fechas de última revisión real del contenido, por tipo de página.
+ *
+ * Una sola fuente para el `lastmod` del sitemap y el `dateModified` del
+ * JSON-LD. Antes la fecha vivía solo dentro de `app/sitemap.ts`, así que el
+ * schema no declaraba ninguna: dos señales de frescura que deberían coincidir,
+ * y una de ellas ausente.
+ *
+ * ⚠️ Actualice una fecha SOLO cuando cambie de verdad el contenido de ese
+ * grupo. Google documenta que únicamente hace caso a `lastmod` cuando es
+ * «consistentemente y verificablemente preciso»; un sitio que declara que todo
+ * cambió en cada despliegue le enseña al rastreador a ignorar el campo, y se
+ * pierde la capacidad de señalar un cambio real el día que importe.
+ */
+export const CONTENT_UPDATED = {
+  home: '2026-07-31',
+  services: '2026-07-31',
+  zones: '2026-07-31',
+  /** Páginas informativas: contacto, privacidad, guía de emergencia. */
+  info: '2026-07-31',
 } as const;
 
 /** Palabras clave objetivo. Se usan en metadata y para revisar cobertura editorial. */

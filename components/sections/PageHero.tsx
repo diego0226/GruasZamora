@@ -40,7 +40,9 @@ export function PageHero({
       <div className="relative mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:pb-20">
         {/* Migas de pan: orientan al usuario y le dicen a Google la jerarquía */}
         <nav aria-label="Ruta de navegación" className="mb-7">
-          <ol className="flex flex-wrap items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-chrome-500">
+          {/* chrome-400, no chrome-500: a 12 px este texto necesita 4,5:1 y el
+              500 sobre night-950 se queda en 4,2:1. */}
+          <ol className="flex flex-wrap items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-chrome-400">
             {crumbs.map((crumb, i) => {
               const last = i === crumbs.length - 1;
               return (

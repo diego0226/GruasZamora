@@ -4,33 +4,82 @@ import Image from 'next/image';
 import { ArrowUpRight, Check } from 'lucide-react';
 
 import { PageHero } from '@/components/sections/PageHero';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceIcon } from '@/components/ui/ServiceIcon';
 import { Reveal } from '@/components/ui/Reveal';
-import { Faq } from '@/components/sections/Faq';
 import { FinalCta } from '@/components/sections/FinalCta';
 import { JsonLd } from '@/components/JsonLd';
 
 import { SERVICES } from '@/lib/services';
-import { SITE, OG_IMAGE } from '@/lib/site';
-import { breadcrumbSchema, serviceListSchema } from '@/lib/schema';
+import { FAQ_CANONICAL_PATH } from '@/lib/faq';
+import { CONTENT_UPDATED } from '@/lib/site';
+import { pageMetadata } from '@/lib/metadata';
+import { breadcrumbSchema, serviceListSchema, webPageSchema } from '@/lib/schema';
 
 const TITLE = 'Servicios de Grúa en Costa Rica 24/7';
 const DESCRIPTION =
   'Grúa de plataforma y grúa de arrastre con cabrestante para rescate vehicular. Servicio 24/7 desde Grecia, Alajuela, hacia cualquier punto de Costa Rica.';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: '/servicios' },
-  openGraph: {
-    type: 'website',
-    locale: 'es_CR',
-    url: `${SITE.url}/servicios`,
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [OG_IMAGE],
+  path: '/servicios',
+});
+
+/** `@id` de la lista de servicios, para atarla al WebPage como entidad principal. */
+const idsListaServicios = serviceListSchema(SERVICES)['@id'];
+
+/**
+ * Comparación directa entre las dos unidades.
+ *
+ * Es contenido propio de esta página y no de las dos de servicio: aquí es
+ * donde alguien que todavía no sabe qué pedir compara, y ponerlo en un solo
+ * lugar evita repetirlo. Además es el formato que los buscadores con IA citan
+ * con más facilidad —una tabla de criterio contra criterio— sin tener que
+ * reconstruirla leyendo dos páginas distintas.
+ */
+const COMPARACION = [
+  {
+    criterio: 'Cómo viaja el vehículo',
+    plataforma: 'Cargado completo sobre la cama. Las cuatro llantas fuera del suelo.',
+    arrastre: 'Levantado por las llantas con under-lift. Rueda sobre el eje libre.',
   },
-};
+  {
+    criterio: 'Suma kilometraje',
+    plataforma: 'No.',
+    arrastre: 'Sí, en el eje que queda en el suelo.',
+  },
+  {
+    criterio: 'Eléctricos e híbridos',
+    plataforma: 'Es el único método aprobado por los fabricantes.',
+    arrastre: 'No debe usarse: el motor eléctrico genera corriente al girar.',
+  },
+  {
+    criterio: 'Autos de lujo y deportivos bajos',
+    plataforma: 'Sí, con rampas para poca altura libre.',
+    arrastre: 'Solo si no hay alternativa.',
+  },
+  {
+    criterio: 'Vehículo que no rueda',
+    plataforma: 'Sí, sube con cabrestante.',
+    arrastre: 'Depende de qué eje esté dañado.',
+  },
+  {
+    criterio: 'Sótanos y parqueos de techo bajo',
+    plataforma: 'No entra.',
+    arrastre: 'Sí. Es su escenario típico.',
+  },
+  {
+    criterio: 'Calles angostas de cuadrante',
+    plataforma: 'Difícil de maniobrar.',
+    arrastre: 'Sí: la mitad de radio de giro.',
+  },
+  {
+    criterio: 'Fuera de la vía, cuneta o barro',
+    plataforma: 'Solo después de recuperarlo.',
+    arrastre: 'Sí, con cabrestante hidráulico.',
+  },
+];
 
 export default function ServicesIndexPage() {
   const crumbs = [
@@ -40,9 +89,20 @@ export default function ServicesIndexPage() {
 
   return (
     <>
-      {/* El FAQPage de estas preguntas vive en el home — ver la nota en
-          /servicios/[servicio]/page.tsx. */}
-      <JsonLd data={[breadcrumbSchema(crumbs), serviceListSchema(SERVICES)]} />
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: '/servicios',
+            name: TITLE,
+            description: DESCRIPTION,
+            dateModified: CONTENT_UPDATED.services,
+            primaryEntityId: idsListaServicios,
+            hasBreadcrumb: true,
+          }),
+          serviceListSchema(SERVICES),
+          breadcrumbSchema(crumbs),
+        ]}
+      />
 
       <PageHero
         crumbs={crumbs}
@@ -105,7 +165,90 @@ export default function ServicesIndexPage() {
         </div>
       </section>
 
-      <Faq />
+      {/* Comparación — contenido propio de esta página.
+          Antes aquí iba <Faq />, que repetía las diez preguntas generales del
+          sitio: 638 de las 1.034 palabras de la página eran texto que ya
+          estaba en la portada y en otras dieciséis URLs. Esta tabla responde
+          la pregunta que de verdad trae a alguien al índice de servicios
+          —«¿cuál de las dos necesito?»— y no existe en ninguna otra parte. */}
+      <section className="bg-night-950 py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
+          <SectionHeading
+            eyebrow="Cuál necesito"
+            title={
+              <>
+                Plataforma o arrastre: <span className="text-flag-red-lit">la diferencia</span>
+              </>
+            }
+            lead="Pedir la unidad equivocada cuesta tiempo y, a veces, cuesta el vehículo. Si no está seguro, llame y lo definimos en la conversación."
+          />
+
+          <Reveal className="mt-10">
+            {/* La tabla se desborda con scroll propio en móvil: el ancho de la
+                página no debe crecer nunca, que fue el defecto que corrió los
+                accesos flotantes fuera de pantalla. */}
+            <div className="overflow-x-auto border border-chrome-300/12">
+              <table className="w-full min-w-[42rem] border-collapse text-left">
+                <caption className="sr-only">
+                  Comparación entre la grúa de plataforma y la grúa de arrastre según el tipo de
+                  vehículo y el lugar donde quedó
+                </caption>
+                <thead>
+                  <tr className="bg-night-800">
+                    <th
+                      scope="col"
+                      className="border-b border-chrome-300/12 p-4 font-body text-xs font-bold uppercase tracking-wider normal-case text-chrome-400"
+                    >
+                      Criterio
+                    </th>
+                    <th
+                      scope="col"
+                      className="border-b border-l border-chrome-300/12 p-4 font-body text-sm font-bold normal-case tracking-normal text-chrome-50"
+                    >
+                      Grúa de plataforma
+                    </th>
+                    <th
+                      scope="col"
+                      className="border-b border-l border-chrome-300/12 p-4 font-body text-sm font-bold normal-case tracking-normal text-chrome-50"
+                    >
+                      Grúa de arrastre
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARACION.map((fila) => (
+                    <tr key={fila.criterio} className="odd:bg-night-900/40">
+                      <th
+                        scope="row"
+                        className="border-b border-chrome-300/10 p-4 font-body text-sm font-semibold normal-case tracking-normal text-chrome-200"
+                      >
+                        {fila.criterio}
+                      </th>
+                      <td className="border-b border-l border-chrome-300/10 p-4 text-sm leading-relaxed text-chrome-400">
+                        {fila.plataforma}
+                      </td>
+                      <td className="border-b border-l border-chrome-300/10 p-4 text-sm leading-relaxed text-chrome-400">
+                        {fila.arrastre}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-8">
+            <Link
+              href={FAQ_CANONICAL_PATH}
+              className="group inline-flex items-center gap-2 border-b-2 border-flag-red/40 pb-1 text-sm font-bold uppercase tracking-wider text-chrome-100 transition-colors hover:border-flag-red-lit hover:text-flag-red-lit"
+            >
+              Ver las preguntas frecuentes del servicio
+              <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
       <FinalCta />
     </>
   );

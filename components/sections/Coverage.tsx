@@ -36,7 +36,12 @@ export function Coverage() {
   const featuredSlugs = new Set(FEATURED_ZONES.map((z) => z.slug));
   const rest = ZONES.filter((z) => !featuredSlugs.has(z.slug));
   const cantones = rest.filter((z) => z.kind === 'canton');
-  const provincias = rest.filter((z) => z.kind === 'provincia');
+  /* Se separa por `dispatch` y no por `kind`: Guanacaste, Puntarenas y Limón
+     son provincias igual que San José, pero la promesa de servicio es otra
+     —traslado coordinado, no salida inmediata— y agruparlas juntas daría a
+     entender lo contrario. */
+  const valleCentral = rest.filter((z) => z.kind === 'provincia' && z.dispatch !== 'coordinada');
+  const coordinadas = rest.filter((z) => z.dispatch === 'coordinada');
 
   return (
     <section id="cobertura" className="scroll-mt-24 bg-night-950 py-20 lg:py-28">
@@ -64,7 +69,7 @@ export function Coverage() {
                   {i + 1}
                 </span>
                 <Icon className="mb-5 size-7 text-flag-red-lit" strokeWidth={1.7} />
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-chrome-500">
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-chrome-400">
                   {label}
                 </p>
                 <h3 className="mt-2 text-2xl text-chrome-50">{title}</h3>
@@ -119,20 +124,27 @@ export function Coverage() {
               Resto del Valle Central
             </h3>
             <ul className="flex flex-wrap gap-2.5">
-              {provincias.map((zone) => (
+              {valleCentral.map((zone) => (
                 <ZoneChip key={zone.slug} slug={zone.slug} name={zone.name} />
               ))}
             </ul>
           </div>
 
-          <p className="max-w-3xl border-l-2 border-flag-red/50 pl-5 leading-relaxed text-chrome-400">
-            <strong className="font-semibold text-chrome-200">
-              Guanacaste, Puntarenas y Limón:
-            </strong>{' '}
-            también los cubrimos. Son traslados más largos, así que se coordinan por teléfono
-            con hora y precio cerrados antes de que salga la unidad — nunca lo dejamos
-            esperando sin un dato claro.
-          </p>
+          <div>
+            <h3 className="mb-5 text-sm tracking-[0.22em] text-chrome-300">
+              Traslados coordinados
+            </h3>
+            <ul className="flex flex-wrap gap-2.5">
+              {coordinadas.map((zone) => (
+                <ZoneChip key={zone.slug} slug={zone.slug} name={zone.name} />
+              ))}
+            </ul>
+            <p className="mt-5 max-w-3xl border-l-2 border-flag-red/50 pl-5 leading-relaxed text-chrome-400">
+              Son varias horas de manejo desde Grecia, así que aquí no prometemos llegar en
+              minutos: se coordina el traslado por teléfono con hora y precio cerrados antes de
+              que salga la unidad. Nunca lo dejamos esperando sin un dato claro.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>

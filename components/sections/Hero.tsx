@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { ShieldCheck, MapPinned, Receipt, Clock3 } from 'lucide-react';
 import { CallButton, WhatsAppButton } from '@/components/ui/CallButton';
-import { SITE } from '@/lib/site';
+import { yearsOfExperience } from '@/lib/site';
 
 const TRUST = [
   { icon: Clock3, label: '24 horas · 365 días' },
@@ -73,7 +73,7 @@ export function Hero({
             {lead ?? (
               <>
                 <strong className="font-semibold text-chrome-100">Grúas Zamora Moya</strong>: más
-                de {SITE.yearsOfExperience} años levantando carros en la carretera.
+                de {yearsOfExperience()} años levantando carros en la carretera.
                 Plataforma o arrastre, de día o de madrugada. Usted llama, nosotros salimos.
               </>
             )}

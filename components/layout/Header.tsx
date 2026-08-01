@@ -7,16 +7,26 @@ import { Menu, X, MapPin, Mail } from 'lucide-react';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { CallButton } from '@/components/ui/CallButton';
 import { SITE } from '@/lib/site';
-import { FEATURED_ZONES } from '@/lib/zones';
-import { SERVICES } from '@/lib/services';
+/* Navegación ligera, NO los catálogos completos: este componente es de
+   cliente, y `lib/zones.ts` pesa 24 KB de texto editorial que acabarían en el
+   bundle del navegador en todas las páginas. Ver lib/nav.ts. */
+import { FEATURED_ZONE_LINKS, SERVICE_LINKS } from '@/lib/nav';
 import { cn } from '@/lib/utils';
 
 const NAV = [
-  { label: 'Servicios', href: '/#servicios' },
+  /* Apunta a la página real y no al ancla `/#servicios` del home.
+     El índice de servicios era prácticamente huérfano: medido sobre el HTML
+     compilado, recibía dos enlaces contextuales —las migas de las dos páginas
+     de servicio— y CERO desde el encabezado o el pie, mientras el resto de
+     URLs recibía dieciocho. Una página de catálogo sin enlaces internos no
+     acumula autoridad y se rastrea poco. */
+  { label: 'Servicios', href: '/servicios' },
   { label: 'Cobertura', href: '/#cobertura' },
   { label: 'Nosotros', href: '/#nosotros' },
   { label: 'Preguntas', href: '/#preguntas' },
 ];
+
+const MENU_ID = 'menu-movil';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -56,7 +66,7 @@ export function Header() {
       <div className="hidden bg-night-950 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-chrome-400 lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
           <span className="flex items-center gap-2">
-            <span className="lightbar-dot inline-block size-2 rounded-full" />
+            <span className="lightbar-dot inline-block size-2 rounded-full" aria-hidden="true" />
             Disponible ahora · 24 horas, los 365 días
           </span>
           <span className="flex items-center gap-6">
@@ -66,6 +76,7 @@ export function Header() {
             </span>
             <a
               href={`mailto:${SITE.email}`}
+              data-cta="email-header"
               className="flex items-center gap-1.5 transition-colors hover:text-chrome-50"
             >
               <Mail className="size-3.5 text-flag-red-lit" />
@@ -106,6 +117,10 @@ export function Header() {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={open}
+              /* `aria-controls` cierra el vínculo entre el botón y el panel:
+                 sin él, un lector de pantalla anuncia que algo se expandió
+                 pero no puede decir qué. */
+              aria-controls={MENU_ID}
               className="rounded-sm p-2 text-chrome-200 transition-colors hover:bg-night-800 hover:text-chrome-50 lg:hidden"
             >
               {open ? <X className="size-6" /> : <Menu className="size-6" />}
@@ -116,6 +131,15 @@ export function Header() {
 
       {/* Menú móvil */}
       <div
+        id={MENU_ID}
+        /* `inert` mientras está cerrado.
+           El panel se colapsa con `max-h-0`, que lo recorta visualmente pero
+           NO lo saca del árbol de foco: los enlaces seguían siendo enlaces
+           reales y el tabulador se metía en once destinos invisibles antes de
+           llegar al contenido. Con `inert`, el navegador los quita del orden
+           de tabulación y del árbol de accesibilidad de una vez. Es el mismo
+           recurso que ya usaban los accesos flotantes. */
+        inert={!open}
         className={cn(
           'overflow-y-auto border-b border-chrome-300/10 bg-night-950 transition-[max-height,opacity] duration-300 lg:hidden',
           open ? 'max-h-[calc(100dvh-7rem)] opacity-100' : 'max-h-0 opacity-0'
@@ -137,11 +161,20 @@ export function Header() {
           </nav>
 
           <div>
-            <p className="mb-3 font-display text-xs uppercase tracking-[0.25em] text-chrome-500">
+            {/* chrome-400 y no chrome-500: sobre night-950 el 500 da 4,2:1 de
+                contraste y este texto mide 12 px, así que no llegaba al 4,5:1
+                que pide WCAG AA para texto normal. */}
+            <p className="mb-3 font-display text-xs uppercase tracking-[0.25em] text-chrome-400">
               Servicios
             </p>
             <div className="flex flex-col gap-2">
-              {SERVICES.map((s) => (
+              <Link
+                href="/servicios"
+                className="text-sm font-semibold text-chrome-300 transition-colors hover:text-chrome-50"
+              >
+                Todos los servicios
+              </Link>
+              {SERVICE_LINKS.map((s) => (
                 <Link
                   key={s.slug}
                   href={`/servicios/${s.slug}`}
@@ -154,11 +187,11 @@ export function Header() {
           </div>
 
           <div>
-            <p className="mb-3 font-display text-xs uppercase tracking-[0.25em] text-chrome-500">
+            <p className="mb-3 font-display text-xs uppercase tracking-[0.25em] text-chrome-400">
               Zonas
             </p>
             <div className="flex flex-wrap gap-2">
-              {FEATURED_ZONES.map((z) => (
+              {FEATURED_ZONE_LINKS.map((z) => (
                 <Link
                   key={z.slug}
                   href={`/${z.slug}`}

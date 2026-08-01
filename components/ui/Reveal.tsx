@@ -19,6 +19,46 @@ const VARIANTS = {
   right: 'reveal-right',
 } as const;
 
+/* ── Observador único, compartido por todos los Reveal de la página ──────────
+
+   Antes cada instancia creaba su propio IntersectionObserver. En la portada
+   hay unas cuarenta y en una landing de zona más de treinta, así que el
+   navegador terminaba manteniendo decenas de observadores independientes: cada
+   uno con su propio registro de destinos y su propia entrada en el trabajo que
+   el compositor hace en cada cuadro de scroll.
+
+   Un solo observador con muchos destinos hace exactamente el mismo trabajo
+   visual con una fracción del coste, que es lo que se nota en un teléfono de
+   gama baja — el dispositivo desde el que entra alguien varado en la
+   carretera. La API está pensada para esto: `observe()` acepta tantos
+   elementos como haga falta.
+
+   El observador se crea en la primera necesidad y no en la carga del módulo,
+   para no tocar `window` durante el renderizado en servidor. */
+
+const CALLBACKS = new WeakMap<Element, () => void>();
+let observer: IntersectionObserver | null = null;
+
+function getObserver(): IntersectionObserver | null {
+  if (typeof IntersectionObserver === 'undefined') return null;
+
+  observer ??= new IntersectionObserver(
+    (entries, obs) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        CALLBACKS.get(entry.target)?.();
+        CALLBACKS.delete(entry.target);
+        /* Se deja de observar el elemento, no el observador entero: los demás
+           destinos siguen vivos. */
+        obs.unobserve(entry.target);
+      }
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+
+  return observer;
+}
+
 /**
  * Revela el contenido al entrar en pantalla.
  *
@@ -28,7 +68,7 @@ const VARIANTS = {
  *
  * El contenido siempre está en el HTML del servidor (solo cambia la opacidad),
  * así que no afecta la indexación. Sin JavaScript o con "reducir movimiento"
- * activado se muestra de una vez — ver globals.css y el <noscript> del layout.
+ * activado se muestra de una vez — ver globals.css y el script del layout.
  */
 export function Reveal({
   children,
@@ -45,8 +85,10 @@ export function Reveal({
 
     const show = () => el.classList.add('is-revealed');
 
+    const obs = getObserver();
+
     // Navegador sin IntersectionObserver: mostramos y no animamos.
-    if (typeof IntersectionObserver === 'undefined') {
+    if (!obs) {
       show();
       return;
     }
@@ -60,18 +102,13 @@ export function Reveal({
       return;
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          show();
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-    );
+    CALLBACKS.set(el, show);
+    obs.observe(el);
 
-    observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      CALLBACKS.delete(el);
+      obs.unobserve(el);
+    };
   }, []);
 
   return (

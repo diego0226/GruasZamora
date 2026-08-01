@@ -13,8 +13,9 @@ import { JsonLd } from '@/components/JsonLd';
 
 import { SERVICES, getService } from '@/lib/services';
 import { FEATURED_ZONES } from '@/lib/zones';
-import { SITE, OG_IMAGE } from '@/lib/site';
-import { breadcrumbSchema, serviceSchema } from '@/lib/schema';
+import { CONTENT_UPDATED } from '@/lib/site';
+import { pageMetadata } from '@/lib/metadata';
+import { breadcrumbSchema, serviceSchema, webPageSchema } from '@/lib/schema';
 
 export const dynamicParams = false;
 
@@ -31,22 +32,15 @@ export async function generateMetadata({
   const service = getService(servicio);
   if (!service) return {};
 
-  return {
+  /* La imagen para compartir es la general (OG_IMAGE, el valor por defecto de
+     pageMetadata) y no la fotografía del servicio en crudo: grua3.jpg pesa
+     1,3 MB y WhatsApp descarta la vista previa a ese peso, así que esta página
+     se compartía sin imagen. */
+  return pageMetadata({
     title: service.metaTitle,
     description: service.metaDescription,
-    alternates: { canonical: `/servicios/${service.slug}` },
-    openGraph: {
-      type: 'website',
-      locale: 'es_CR',
-      url: `${SITE.url}/servicios/${service.slug}`,
-      title: service.metaTitle,
-      description: service.metaDescription,
-      // Antes iba aquí la fotografía del servicio en crudo, y grua3.jpg pesa
-      // 1.3 MB: WhatsApp descarta la vista previa a ese peso, así que esta
-      // página se compartía sin imagen.
-      images: [OG_IMAGE],
-    },
-  };
+    path: `/servicios/${service.slug}`,
+  });
 }
 
 export default async function ServicePage({
@@ -66,14 +60,28 @@ export default async function ServicePage({
 
   const others = SERVICES.filter((s) => s.slug !== service.slug);
 
+  const schema = serviceSchema(service);
+
   return (
     <>
-      {/* Sin FAQPage aquí a propósito: estas preguntas son las generales del
-          sitio y su lugar canónico es el home. Google pide que el FAQPage vaya
-          en la página cuyo contenido principal SON esas preguntas; emitirlo en
-          las 17 URLs era declarar diecisiete veces el mismo bloque. El
-          acordeón se mantiene visible porque al usuario sí le sirve. */}
-      <JsonLd data={[serviceSchema(service), breadcrumbSchema(crumbs)]} />
+      {/* Sin FAQPage aquí a propósito: el sitio lo emite en una sola URL, la
+          portada, que es donde las preguntas generales son el contenido
+          principal. Esta página muestra las suyas propias —las de esta unidad,
+          definidas en lib/services.ts— y enlaza al resto. */}
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: `/servicios/${service.slug}`,
+            name: service.metaTitle,
+            description: service.metaDescription,
+            dateModified: CONTENT_UPDATED.services,
+            primaryEntityId: schema['@id'],
+            hasBreadcrumb: true,
+          }),
+          schema,
+          breadcrumbSchema(crumbs),
+        ]}
+      />
 
       <PageHero
         crumbs={crumbs}
@@ -212,7 +220,17 @@ export default async function ServicePage({
         </div>
       </section>
 
-      <Faq />
+      <Faq
+        items={service.faqs}
+        title={
+          <>
+            Preguntas sobre{' '}
+            <span className="text-flag-red-lit">{service.name.toLowerCase()}</span>
+          </>
+        }
+        lead="Lo que se pregunta antes de decidir qué unidad pedir. Las preguntas generales del servicio están en la portada."
+        showMoreLink
+      />
 
       <FinalCta
         title={

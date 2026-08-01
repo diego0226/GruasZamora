@@ -1,7 +1,8 @@
-import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, ArrowRight } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Reveal } from '@/components/ui/Reveal';
-import { FAQS, type Faq as FaqItem } from '@/lib/faq';
+import { FAQS, FAQ_CANONICAL_PATH, type Faq as FaqItem } from '@/lib/faq';
 
 /**
  * Acordeón con <details>/<summary> nativo: cero JavaScript, accesible por
@@ -11,10 +12,22 @@ import { FAQS, type Faq as FaqItem } from '@/lib/faq';
 export function Faq({
   items = FAQS,
   title,
+  lead,
+  showMoreLink = false,
 }: {
   items?: FaqItem[];
   /** Las landings de zona lo sobrescriben para nombrar la zona en el H2. */
   title?: React.ReactNode;
+  lead?: React.ReactNode;
+  /**
+   * Enlace a las preguntas generales de la portada.
+   *
+   * Las páginas que no son la portada muestran solo sus preguntas propias, así
+   * que este enlace es el que lleva al resto en vez de copiarlas. Es la mitad
+   * que cierra la corrección de contenido duplicado: se quita la copia, pero
+   * no se deja al usuario sin la respuesta.
+   */
+  showMoreLink?: boolean;
 }) {
   return (
     <section id="preguntas" className="scroll-mt-24 bg-night-950 py-20 lg:py-28">
@@ -28,7 +41,10 @@ export function Faq({
               </>
             )
           }
-          lead="Respuestas directas, sin rodeos. Si su duda no está aquí, llame y se la contestamos por teléfono."
+          lead={
+            lead ??
+            'Respuestas directas, sin rodeos. Si su duda no está aquí, llame y se la contestamos por teléfono.'
+          }
         />
 
         <div className="mt-12 divide-y divide-chrome-300/12 border-y border-chrome-300/12">
@@ -49,6 +65,18 @@ export function Faq({
             </Reveal>
           ))}
         </div>
+
+        {showMoreLink && (
+          <Reveal className="mt-8">
+            <Link
+              href={FAQ_CANONICAL_PATH}
+              className="group inline-flex items-center gap-2 border-b-2 border-flag-red/40 pb-1 text-sm font-bold uppercase tracking-wider text-chrome-100 transition-colors hover:border-flag-red-lit hover:text-flag-red-lit"
+            >
+              Ver todas las preguntas frecuentes
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </Reveal>
+        )}
       </div>
     </section>
   );

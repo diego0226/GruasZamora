@@ -8,7 +8,7 @@ import { FloatingContact } from '@/components/layout/FloatingContact';
 import { JsonLd } from '@/components/JsonLd';
 import { Analytics } from '@/components/Analytics';
 import { SITE, TARGET_KEYWORDS, OG_IMAGE } from '@/lib/site';
-import { localBusinessSchema, websiteSchema } from '@/lib/schema';
+import { localBusinessSchema, websiteSchema, primaryImageSchema } from '@/lib/schema';
 
 /* Tipografía de rotulación: condensada y pesada, como las letras pintadas
    en las unidades. Se autohospedan — cero peticiones a Google en runtime. */
@@ -124,8 +124,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         {/* El schema del negocio va una sola vez, en la raíz: el resto de
-            páginas lo referencian por @id desde lib/schema.ts */}
-        <JsonLd data={[localBusinessSchema(), websiteSchema()]} />
+            páginas lo referencian por @id desde lib/schema.ts. La imagen
+            principal se describe aquí por el mismo motivo — una sola
+            definición, referenciada desde cada WebPage. */}
+        <JsonLd data={[localBusinessSchema(), websiteSchema(), primaryImageSchema()]} />
 
         {/* Activa las animaciones de entrada SOLO si el JavaScript corre.
             Sin esta clase, `.js .reveal` nunca aplica y todo el contenido se

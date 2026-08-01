@@ -50,11 +50,22 @@ const CSP = [
   "default-src 'self'",
   `script-src ${scriptSrc}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com",
+  "img-src 'self' data: blob: https://*.google-analytics.com https://www.googletagmanager.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
-  // El sitio no embebe nada de terceros ni debe poder ser embebido.
-  "frame-src 'none'",
+  /* Comodín en los subdominios de Analytics a propósito.
+     GA4 no manda los eventos siempre a www.google-analytics.com: según la
+     región del visitante usa `region1.google-analytics.com`, `region2`, etc.
+     La lista literal anterior dejaba fuera esos hosts, así que el día que se
+     configure la medición los eventos de Costa Rica se bloquearían en
+     silencio — y el síntoma sería «GA no registra nada», que es de lo más
+     difícil de diagnosticar. */
+  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+  /* El sitio no embebe nada propio de terceros, pero Google Tag Manager
+     incluye un <noscript> con un iframe hacia googletagmanager.com para los
+     visitantes sin JavaScript. Con `frame-src 'none'` ese iframe quedaba
+     bloqueado y la consola mostraba un error de CSP en cada carga. Se permite
+     solo ese host, no cualquiera. */
+  'frame-src https://www.googletagmanager.com',
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -122,7 +133,39 @@ const nextConfig: NextConfig = {
       /* No se declara Cache-Control para /_next/static: Next.js ya sirve esos
          archivos con `max-age=31536000, immutable` por su cuenta, y el build
          avisa de que sobrescribirlo puede romper el comportamiento en
-         desarrollo. Duplicar la cabecera no ganaba nada. */
+         desarrollo. Duplicar la cabecera no ganaba nada. Comprobado en
+         producción: el CSS sale con `max-age=31536000, immutable`. */
+
+      /**
+       * Fotografías de public/.
+       *
+       * Comprobado en producción: salían con `Cache-Control: public,
+       * max-age=0, must-revalidate`, que es el valor por defecto de Vercel
+       * para los archivos estáticos sin hash en el nombre. El efecto es que
+       * el navegador revalida la foto del hero —la imagen LCP— en cada
+       * navegación interna y en cada visita repetida: un viaje de ida y vuelta
+       * a la red antes de poder pintar el elemento más grande de la página.
+       *
+       * Y no afecta solo al original: el optimizador de `next/image` deriva la
+       * caché de la respuesta de origen, así que las variantes AVIF servidas
+       * desde /_next/image heredaban el mismo `max-age=0` pese a tener
+       * `minimumCacheTTL` de un año configurado arriba.
+       *
+       * Treinta días, no un año, y sin `immutable`: estos archivos NO llevan
+       * hash en el nombre, así que si algún día se reemplaza una foto
+       * conservando el nombre, `stale-while-revalidate` deja que el navegador
+       * muestre la vieja una vez y traiga la nueva de fondo, en lugar de
+       * quedarse clavado con la anterior durante un año.
+       */
+      {
+        source: '/:archivo(.*\\.(?:jpg|jpeg|png|webp|avif|svg|ico))',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, stale-while-revalidate=604800',
+          },
+        ],
+      },
     ];
   },
 };

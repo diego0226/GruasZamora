@@ -57,6 +57,7 @@ export function FinalCta({
             <li>
               <a
                 href={`mailto:${SITE.email}`}
+                data-cta="email-cierre"
                 className="flex items-center gap-2.5 transition-colors hover:text-chrome-100"
               >
                 <Mail className="size-4 shrink-0 text-flag-red-lit" />

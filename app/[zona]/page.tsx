@@ -11,11 +11,12 @@ import { Faq } from '@/components/sections/Faq';
 import { FinalCta } from '@/components/sections/FinalCta';
 import { JsonLd } from '@/components/JsonLd';
 
-import { ZONES, getZone } from '@/lib/zones';
+import { ZONES, getZone, getNeighbors } from '@/lib/zones';
 import { SERVICES } from '@/lib/services';
-import { FAQS, zoneFaqs } from '@/lib/faq';
-import { SITE, OG_IMAGE } from '@/lib/site';
-import { breadcrumbSchema, faqSchema, zoneServiceSchema } from '@/lib/schema';
+import { zoneFaqs } from '@/lib/faq';
+import { CONTENT_UPDATED } from '@/lib/site';
+import { pageMetadata } from '@/lib/metadata';
+import { breadcrumbSchema, webPageSchema, zoneServiceSchema } from '@/lib/schema';
 
 /* Solo existen las zonas del catálogo: cualquier otro slug es un 404 real,
    no una página vacía indexable. */
@@ -34,19 +35,11 @@ export async function generateMetadata({
   const zone = getZone(zona);
   if (!zone) return {};
 
-  return {
+  return pageMetadata({
     title: zone.metaTitle,
     description: zone.metaDescription,
-    alternates: { canonical: `/${zone.slug}` },
-    openGraph: {
-      type: 'website',
-      locale: 'es_CR',
-      url: `${SITE.url}/${zone.slug}`,
-      title: zone.metaTitle,
-      description: zone.metaDescription,
-      images: [OG_IMAGE],
-    },
-  };
+    path: `/${zone.slug}`,
+  });
 }
 
 export default async function ZonePage({ params }: { params: Promise<{ zona: string }> }) {
@@ -59,16 +52,36 @@ export default async function ZonePage({ params }: { params: Promise<{ zona: str
     { name: `Grúas ${zone.name}`, path: `/${zone.slug}` },
   ];
 
-  const nearby = zone.nearby.map(getZone).filter((z) => z !== undefined);
+  /* Vecinas en los dos sentidos: la unión de las que esta zona declara y las
+     que la declaran a ella. Ver getNeighbors() en lib/zones.ts. */
+  const nearby = getNeighbors(zone.slug);
 
-  /* Las preguntas propias de la zona van primero: son las que responden lo que
-     alguien busca cuando escribe "grúas <cantón>", y las que hacen que esta
-     página no sea una copia de las otras doce. */
-  const faqs = [...zoneFaqs(zone), ...FAQS];
+  /* SOLO las preguntas propias de la zona.
+     Antes esto era `[...zoneFaqs(zone), ...FAQS]`, así que cada landing
+     publicaba además las diez preguntas generales —638 palabras— y emitía su
+     propio FAQPage con ellas. Catorce copias del mismo bloque en las catorce
+     páginas que tienen que competir entre sí por cantones distintos. Las
+     generales viven ahora solo en la portada y desde aquí se enlazan. */
+  const faqs = zoneFaqs(zone);
+
+  const zoneService = zoneServiceSchema(zone);
 
   return (
     <>
-      <JsonLd data={[zoneServiceSchema(zone), breadcrumbSchema(crumbs), faqSchema(faqs)]} />
+      <JsonLd
+        data={[
+          webPageSchema({
+            path: `/${zone.slug}`,
+            name: zone.metaTitle,
+            description: zone.metaDescription,
+            dateModified: CONTENT_UPDATED.zones,
+            primaryEntityId: zoneService['@id'],
+            hasBreadcrumb: true,
+          }),
+          zoneService,
+          breadcrumbSchema(crumbs),
+        ]}
+      />
 
       <PageHero
         crumbs={crumbs}
@@ -260,6 +273,8 @@ export default async function ZonePage({ params }: { params: Promise<{ zona: str
             <span className="text-flag-red-lit">{zone.inName}</span>
           </>
         }
+        lead={`Lo que preguntan quienes nos llaman desde ${zone.name}. Las preguntas generales del servicio —precio, formas de pago, seguros, vehículos eléctricos— están en la portada.`}
+        showMoreLink
       />
 
       <FinalCta

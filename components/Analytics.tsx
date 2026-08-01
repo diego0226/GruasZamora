@@ -1,4 +1,6 @@
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import { CtaTracking } from './CtaTracking';
+import { WebVitals } from './WebVitals';
 
 /**
  * Analítica, cableada por variables de entorno.
@@ -23,8 +25,19 @@ export function Analytics() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
-  if (gtmId) return <GoogleTagManager gtmId={gtmId} />;
-  if (gaId) return <GoogleAnalytics gaId={gaId} />;
+  /* Sin ninguna de las dos variables no se renderiza nada: ni el script ni el
+     seguimiento de CTA, que sin destino no tendría a dónde mandar el evento.
 
-  return null;
+     ⚠️ Comprobado en producción: hoy NO hay ninguna configurada, así que el
+     sitio no está midiendo nada. Es el hallazgo F-09 de la auditoría y se
+     resuelve poniendo la variable en Vercel, no tocando código. */
+  if (!gtmId && !gaId) return null;
+
+  return (
+    <>
+      {gtmId ? <GoogleTagManager gtmId={gtmId} /> : <GoogleAnalytics gaId={gaId!} />}
+      <CtaTracking />
+      <WebVitals />
+    </>
+  );
 }

@@ -5,7 +5,14 @@
  *
  * Las tres primeras son las palabras clave prioritarias del negocio:
  * "grúas Grecia", "grúas occidente" y "grúas en Costa Rica".
+ *
+ * ⚠️ Este módulo es SOLO de servidor. Pesa unos 24 KB de texto editorial y no
+ * debe importarse desde un componente con `'use client'`: el empaquetador lo
+ * mandaría entero al navegador en todas las páginas. Los componentes de
+ * cliente usan `lib/nav.ts`. Ver la nota completa en ese archivo.
  */
+
+import { ZONE_LINKS, assertNavParity } from './nav';
 
 export type Zone = {
   slug: string;
@@ -17,6 +24,22 @@ export type Zone = {
   metaTitle: string;
   metaDescription: string;
   kind: 'canton' | 'region' | 'provincia' | 'nacional';
+  /**
+   * Qué promete la página sobre el despacho. Es una decisión comercial, no
+   * geográfica, y por eso va aparte de `kind`.
+   *
+   *   `base`        — Grecia. Las unidades duermen aquí.
+   *   `rapida`      — se sale a una emergencia con disponibilidad normal.
+   *   `coordinada`  — traslado largo: se cierra hora y precio por teléfono
+   *                   antes de que salga la unidad. NO se promete respuesta
+   *                   inmediata.
+   *
+   * La distinción existe porque el texto generado de las preguntas frecuentes
+   * cambia con ella. Guanacaste y Limón no pueden llevar la misma promesa que
+   * Sarchí, y prometer de más en una página que capta la búsqueda solo genera
+   * llamadas que terminan mal.
+   */
+  dispatch: 'base' | 'rapida' | 'coordinada';
   /** Se muestra bajo el H1 */
   lead: string;
   /** Distritos, barrios o cantones cubiertos */
@@ -25,7 +48,13 @@ export type Zone = {
   routes: { name: string; note: string }[];
   /** Secciones de contenido único de la zona */
   body: { title: string; text: string }[];
-  /** Slugs vecinos para enlazado interno */
+  /**
+   * Slugs vecinos que esta zona declara.
+   *
+   * Es una declaración dirigida, pero la vecindad se PINTA como no dirigida:
+   * `getNeighbors()` devuelve la unión de lo que la zona declara y de quién la
+   * declara a ella. Ver la nota de esa función.
+   */
   nearby: string[];
   /** Prioridad en el sitemap */
   priority: number;
@@ -43,6 +72,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Grecia, Alajuela las 24 horas. Plataforma, arrastre y rescate en Tacares, San Roque, Puente de Piedra y todo el cantón. Llame al 8387-6352.',
     kind: 'canton',
+    dispatch: 'base',
     geo: { latitude: 10.0722, longitude: -84.3136 },
     lead:
       'Grecia es nuestra base. Aquí vivimos, aquí guardamos las unidades y desde aquí salimos. Si su vehículo quedó varado dentro del cantón, no está llamando a una central en San José que va a despachar a alguien desde lejos: está llamando al vecino que ya conoce la cuesta donde usted está parado.',
@@ -89,8 +119,23 @@ export const ZONES: Zone[] = [
         title: 'Atención local, cobertura nacional',
         text: 'Que la base esté en Grecia no limita el servicio. Si el carro se le varó en Grecia pero el taller de confianza está en San José, o si compró un vehículo en Guanacaste y lo quiere en su casa aquí, el traslado se hace igual. La base local es la ventaja para llegar rápido, no un límite de hasta dónde vamos.',
       },
+      {
+        title: 'Qué pasa desde que llama hasta que llega la unidad',
+        text: 'Primero le preguntamos tres cosas: dónde está, qué vehículo es y qué le pasó. Con eso se decide sola la unidad —plataforma si el carro no debe rodar, arrastre si hay que sacarlo de donde quedó— y se calcula el tiempo real desde la base. Antes de colgar usted ya sabe el monto y a qué hora llega la grúa. No hay una segunda llamada para "ajustar el precio" cuando el operador ve el carro: eso es exactamente lo que la gente teme al llamar una grúa que no conoce, y es la razón por la que el precio se cierra al principio y no al final.',
+      },
+      {
+        title: 'Grecia también atiende hacia el norte',
+        text: 'Hasta 2017 Río Cuarto era el distrito trece de este cantón, y aunque hoy sea cantón propio la ruta sigue siendo la misma que hemos hecho siempre. Si el vehículo quedó en la carretera de montaña hacia Cariblanco o en un camino de finca por Santa Rita, se atiende desde aquí. Lo mismo hacia Sarchí por la 726 y hacia Poás por Carrillos: Grecia queda en el punto donde esas tres salidas se juntan, y por eso el tiempo de respuesta en toda esa franja es corto.',
+      },
     ],
-    nearby: ['gruas-sarchi', 'gruas-naranjo', 'gruas-poas', 'gruas-alajuela', 'gruas-atenas'],
+    nearby: [
+      'gruas-sarchi',
+      'gruas-naranjo',
+      'gruas-poas',
+      'gruas-alajuela',
+      'gruas-atenas',
+      'gruas-rio-cuarto',
+    ],
     priority: 1.0,
   },
   {
@@ -102,6 +147,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas 24/7 en todo el Occidente de Alajuela: Grecia, Sarchí, Naranjo, Palmares, San Ramón, Zarcero, Atenas y Poás. Base en Grecia. Llame al 8387-6352.',
     kind: 'region',
+    dispatch: 'rapida',
     geo: { latitude: 10.0722, longitude: -84.3136 },
     lead:
       'Occidente no es una zona plana. Son cuestas, neblina, curvas cerradas y tramos de la Interamericana donde el tráfico pesado no perdona un error. Operamos desde Grecia, en el centro de la región, con las unidades listas las 24 horas para cualquiera de los cantones de la zona.',
@@ -153,6 +199,14 @@ export const ZONES: Zone[] = [
         title: 'Neblina y lluvia: la temporada de más llamadas',
         text: 'De mayo a noviembre, los tramos altos de Zarcero y Naranjo amanecen y anochecen con visibilidad reducida. Es cuando más salidas de vía atendemos. Si le pasó, lo primero es ponerse a salvo fuera del vehículo y detrás de la barrera de contención; lo segundo es llamar. Salimos a cualquier hora, con lluvia y de noche.',
       },
+      {
+        title: 'No todos los cantones piden lo mismo',
+        text: 'Zarcero y la parte alta de Naranjo generan sobre todo rescates: vehículos que se salieron en una curva y quedaron fuera de la calzada, donde primero hay que recuperar con cable y después decidir si se traslada. Sarchí y el cuadrante de Grecia piden maniobra en calle angosta, que es terreno de arrastre. La Interamericana entre Palmares y San Ramón pide carga rápida y señalización, porque el riesgo ahí no es el vehículo sino el tráfico que viene detrás. Y Atenas y Poás concentran recalentamientos y frenos exigidos por la pendiente. Saber de antemano qué suele pasar en cada punto es lo que permite despachar la unidad correcta a la primera en vez de mandar una y tener que volver con la otra.',
+      },
+      {
+        title: 'Los tramos que concentran las llamadas',
+        text: 'Si tuviéramos que apostar dónde va a sonar el teléfono, serían cinco puntos: la cuesta de Zarcero en la Ruta 141 con neblina, la cuesta de Naranjo por recalentamiento subiendo y frenos bajando, la bajura de San Ramón hacia Esparza, la cuesta de Tacares en Grecia y las curvas de la Ruta 3 hacia La Garita desde Atenas. Son tramos con pendiente sostenida, pocos espacios seguros para orillarse y tráfico pesado. Si va a hacer alguno de esos recorridos con el carro cargado, revise refrigerante y frenos antes de salir: la mayoría de las varadas que atendemos ahí se veían venir.',
+      },
     ],
     nearby: [
       'gruas-grecia',
@@ -173,6 +227,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en todo Costa Rica 24 horas: plataforma, arrastre y rescate vehicular en las 7 provincias. Más de 30 años de experiencia. Llame al 8387-6352.',
     kind: 'nacional',
+    dispatch: 'rapida',
     geo: { latitude: 9.9281, longitude: -84.0907 },
     lead:
       'Un traslado no se detiene en el límite de la provincia. Trabajamos en las siete provincias del país: del Caribe a Guanacaste, de la Zona Norte al Pacífico Sur. Si el vehículo tiene que moverse, lo movemos.',
@@ -239,6 +294,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas 24/7 en Alajuela centro, La Garita, Río Segundo, Turrúcares y alrededores del Aeropuerto Juan Santamaría. Plataforma y arrastre 24/7. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0162, longitude: -84.2116 },
     lead:
       'Alajuela concentra el aeropuerto, la zona franca y el tramo más cargado de la Interamericana. Es tráfico denso, muchos vehículos de alquiler y conductores que no conocen las salidas. Estamos a pocos minutos por la Ruta 118.',
@@ -295,6 +351,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Naranjo 24 horas: cuesta de Naranjo, Ruta 141 hacia Zarcero, Cirrí Sur y San Jerónimo. Plataforma, arrastre y rescate. Llame al 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0947, longitude: -84.3808 },
     lead:
       'Naranjo es cuesta pura y el cruce obligado hacia Zarcero y la Zona Norte. Es de las zonas donde más nos llaman por frenos recalentados bajando y por vehículos que no completan la subida.',
@@ -344,6 +401,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Sarchí Norte, Sarchí Sur, San Pedro y Toro Amarillo las 24 horas. Remolque de plataforma y arrastre. A minutos desde Grecia. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0886, longitude: -84.3486 },
     lead:
       'Sarchí queda a minutos de nuestra base en Grecia. Calles del cuadrante angostas, mucho turismo en temporada y caminos que suben hacia Toro Amarillo: los tres escenarios los atendemos con la unidad correcta.',
@@ -391,6 +449,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Palmares 24 horas: centro, Zaragoza, Buenos Aires, Santiago y Esquipulas. Cobertura reforzada durante las Fiestas de Palmares. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0553, longitude: -84.4356 },
     lead:
       'Palmares es tranquilo once meses al año y luego llegan las fiestas. Para las dos situaciones estamos disponibles, con acceso directo por la Interamericana desde Grecia.',
@@ -439,6 +498,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas y rescate vehicular en San Ramón las 24 horas: bajura de San Ramón, Ruta 702 hacia La Fortuna, Piedades y Volio. Plataforma y arrastre. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0894, longitude: -84.4711 },
     lead:
       'San Ramón es el cantón más extenso de Occidente y el que tiene los tramos más exigentes: la bajura hacia Puntarenas y la salida a La Fortuna por Peñas Blancas.',
@@ -493,6 +553,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Atenas las 24 horas: centro, Jesús, Mercedes, Concepción y accesos a la Ruta 27 y La Garita. Plataforma, arrastre y rescate. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 9.9797, longitude: -84.3806 },
     lead:
       'Atenas conecta el Valle Central con el Pacífico. Las curvas hacia La Garita y el enlace con la Ruta 27 generan un flujo constante de vehículos que no conocen la vía.',
@@ -542,6 +603,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Poás las 24 horas: San Pedro, Carrillos, Sabana Redonda y la ruta al Volcán Poás. Rescate en pendiente con cabrestante. Llame al 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.0894, longitude: -84.2622 },
     lead:
       'Poás es subida constante, neblina en la parte alta y mucho turismo camino al volcán. Estamos al lado, por la Ruta 118 desde Grecia.',
@@ -589,6 +651,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Zarcero las 24 horas: cuesta de Zarcero, Ruta 141, Laguna, Tapesco y Guadalupe. Rescate con cabrestante en pendiente y neblina. 8387-6352.',
     kind: 'canton',
+    dispatch: 'rapida',
     geo: { latitude: 10.1897, longitude: -84.3908 },
     lead:
       'Zarcero es altura, frío y neblina. La cuesta que sube desde Naranjo es uno de los tramos que más rescates genera en todo Occidente, sobre todo de noche y en invierno.',
@@ -621,6 +684,61 @@ export const ZONES: Zone[] = [
     priority: 0.8,
   },
   {
+    /* Zona objetivo declarada por la empresa que hasta ahora no tenía URL
+       (hallazgo F-02). Los distritos y las rutas de aquí son geografía
+       pública verificable; el tono de despacho lo confirmó la empresa: se
+       atiende igual que el resto de Occidente. */
+    slug: 'gruas-rio-cuarto',
+    name: 'Río Cuarto',
+    inName: 'en Río Cuarto',
+    heading: 'Grúas en Río Cuarto, Alajuela',
+    metaTitle: 'Grúas en Río Cuarto 24/7 · Alajuela',
+    metaDescription:
+      'Grúas en Río Cuarto las 24 horas: Santa Rita, Santa Isabel y la Ruta 126 desde Vara Blanca. Rescate en montaña y caminos de finca. Llame al 8387-6352.',
+    kind: 'canton',
+    dispatch: 'rapida',
+    geo: { latitude: 10.3406, longitude: -84.2094 },
+    lead:
+      'Río Cuarto fue distrito de Grecia hasta 2017, y para nosotros sigue siendo territorio conocido: es la bajada hacia la Zona Norte que hemos hecho toda la vida. Montaña, neblina, lluvia casi todo el año y caminos de finca que se ponen imposibles en invierno.',
+    places: [
+      'Río Cuarto centro',
+      'Santa Rita',
+      'Santa Isabel',
+      'Los Ángeles',
+      'Fincas y potreros del cantón',
+    ],
+    routes: [
+      {
+        name: 'Ruta 126 (Vara Blanca – Cariblanco – Río Cuarto)',
+        note: 'La vía de acceso desde el Valle Central. Montaña, curvas cerradas y neblina que baja sin aviso a partir de Vara Blanca.',
+      },
+      {
+        name: 'Salida hacia Venecia y la Zona Norte',
+        note: 'Conexión con San Carlos. Mucho tráfico agrícola pesado y tramos con superficie irregular.',
+      },
+      {
+        name: 'Caminos de finca hacia piñeras y potreros',
+        note: 'Lastre y barro. En invierno es terreno de cabrestante, no de cama plana.',
+      },
+    ],
+    body: [
+      {
+        title: 'Del distrito 13 de Grecia a cantón propio',
+        text: 'Hasta 2017 Río Cuarto era el distrito número trece del cantón de Grecia. Que se independizara administrativamente no cambió el mapa que llevamos en la cabeza: es la misma ruta que hemos subido y bajado durante décadas para atender averías en la carretera de montaña. Cuando alguien llama diciendo que quedó varado "pasando Cariblanco" o "antes de llegar a Santa Rita", no hace falta que nos explique dónde es.',
+      },
+      {
+        title: 'La 126 castiga los frenos en la bajada',
+        text: 'La carretera que une el Valle Central con Río Cuarto es descenso sostenido con curvas. Bajar con el pie pegado al freno cristaliza las pastillas y hace perder presión justo donde hay menos espacios seguros para orillarse. Si el pedal se le puso esponjoso o empezó a oler a quemado, deténgase en el primer punto seguro y llame: es una de las varadas más frecuentes de esta ruta y no mejora siguiendo.',
+      },
+      {
+        title: 'Invierno, barro y caminos de finca',
+        text: 'Río Cuarto es zona de piña y ganadería, y buena parte de los accesos a las fincas son de lastre. Con las lluvias, una camioneta que entra cargada sale atascada. Eso no se resuelve con una plataforma: se resuelve con cable. El cabrestante hidráulico lo saca hasta terreno firme y de ahí se decide si hace falta trasladarlo o puede seguir por sus propios medios.',
+      },
+    ],
+    nearby: ['gruas-grecia', 'gruas-poas', 'gruas-sarchi', 'gruas-occidente'],
+    priority: 0.8,
+  },
+  {
     slug: 'gruas-san-jose',
     name: 'San José',
     inName: 'en San José',
@@ -629,6 +747,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en San José las 24 horas: Circunvalación, Ruta 27, Ruta 32 y centro. Traslados desde y hacia Occidente, plataforma y arrastre. Llame al 8387-6352.',
     kind: 'provincia',
+    dispatch: 'rapida',
     geo: { latitude: 9.9281, longitude: -84.0907 },
     lead:
       'Buena parte de nuestros traslados empiezan o terminan en San José: talleres especializados, agencias, concesionarios y compras entre particulares. Subimos y bajamos por la Interamericana todos los días.',
@@ -683,6 +802,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Heredia las 24 horas: centro, Santo Domingo, San Pablo, Belén, Barva y las zonas francas. Plataforma y arrastre desde Grecia. Llame al 8387-6352.',
     kind: 'provincia',
+    dispatch: 'rapida',
     geo: { latitude: 9.9981, longitude: -84.1197 },
     lead:
       'Heredia queda a un tramo directo de autopista desde Grecia. Es tráfico de gente que se mueve todos los días entre la provincia y San José, con parques industriales y zonas francas donde los parqueos son grandes pero las salidas complicadas.',
@@ -740,6 +860,7 @@ export const ZONES: Zone[] = [
     metaDescription:
       'Grúas en Cartago las 24 horas: centro, Tres Ríos, Paraíso, El Guarco y Turrialba. Rescate en la cuesta de Ochomogo y traslados a todo el país. 8387-6352.',
     kind: 'provincia',
+    dispatch: 'rapida',
     geo: { latitude: 9.8644, longitude: -83.9194 },
     lead:
       'Cartago es altura, neblina y una de las cuestas más exigentes del Valle Central. Llegamos por la Circunvalación y la Florencio del Castillo, y hacemos traslados desde y hacia Occidente todo el año.',
@@ -785,7 +906,198 @@ export const ZONES: Zone[] = [
     nearby: ['gruas-san-jose', 'gruas-heredia', 'gruas-costa-rica', 'gruas-alajuela'],
     priority: 0.7,
   },
+
+  /* ───────────────── PROVINCIAS DE TRASLADO COORDINADO ─────────────────
+     Guanacaste, Puntarenas y Limón se nombraban en el home y en la página
+     nacional pero no tenían URL propia (hallazgo F-03).
+
+     Llevan `dispatch: 'coordinada'` a propósito: son varias horas de manejo
+     reales desde Grecia, y la empresa confirmó que ahí el servicio es traslado
+     coordinado con hora y precio cerrados por teléfono, no salida inmediata a
+     una varada. Las páginas lo dicen en el primer párrafo. Prometer respuesta
+     rápida a 250 km de la base captaría la búsqueda y perdería al cliente. */
+  {
+    slug: 'gruas-guanacaste',
+    name: 'Guanacaste',
+    inName: 'en Guanacaste',
+    heading: 'Grúas y traslados en Guanacaste',
+    metaTitle: 'Grúas en Guanacaste · Traslados 24/7',
+    metaDescription:
+      'Traslado de vehículos desde y hacia Guanacaste: Liberia, Santa Cruz, Nicoya, Cañas y las playas. Coordinado con hora y precio cerrados. 8387-6352.',
+    kind: 'provincia',
+    dispatch: 'coordinada',
+    geo: { latitude: 10.6339, longitude: -85.4377 },
+    lead:
+      'Guanacaste está a varias horas de manejo desde Grecia, y preferimos decirlo de frente: aquí no somos la opción para una varada que necesita grúa en veinte minutos. Somos la opción para mover un vehículo entre Guanacaste y el resto del país con fecha, hora y precio cerrados antes de que salga la unidad.',
+    places: [
+      'Liberia',
+      'Santa Cruz',
+      'Nicoya',
+      'Cañas',
+      'Bagaces',
+      'Carrillo',
+      'Tilarán',
+      'Abangares',
+      'La Cruz',
+      'Nandayure',
+      'Hojancha',
+    ],
+    routes: [
+      {
+        name: 'Ruta 1 · Interamericana Norte',
+        note: 'El eje que usamos para subir: Esparza, Cañas, Liberia y hasta Peñas Blancas.',
+      },
+      {
+        name: 'Ruta 18 · Puente La Amistad sobre el Tempisque',
+        note: 'El acceso corto a la península de Nicoya, y el que decide cuánto dura el viaje.',
+      },
+      {
+        name: 'Ruta 21 (Liberia – Santa Cruz – Nicoya)',
+        note: 'La columna de la península y la salida hacia las playas.',
+      },
+      {
+        name: 'Ruta 142 (Cañas – Tilarán)',
+        note: 'Subida hacia la zona del Arenal, con viento fuerte en la parte alta.',
+      },
+    ],
+    body: [
+      {
+        title: 'Qué sí resolvemos aquí',
+        text: 'Compró un vehículo en Liberia y lo quiere en el Valle Central. Se muda y tiene que mover un carro que no circula. Tiene una unidad de flotilla varada en una finca y hay que sacarla. Un vehículo quedó de un accidente en la Interamericana y el taller está en San José. Todo eso son traslados programados o semiprogramados, y son exactamente lo que hacemos bien a esta distancia: se coordina, se confirma el precio, sale la unidad.',
+      },
+      {
+        title: 'Qué no le vamos a prometer',
+        text: 'Que llegamos en media hora a una varada en Playa Sámara. De Grecia a la península hay varias horas de manejo reales, con el paso del Tempisque de por medio. Si usted está varado en Guanacaste ahora mismo y necesita a alguien de inmediato, lo honesto es decirle que busque una grúa de la zona. Llámenos igual si el traslado puede esperar o si nadie más le resuelve: le damos el tiempo real y usted decide.',
+      },
+      {
+        title: 'Calor, distancia y el estado del vehículo',
+        text: 'Un traslado largo hacia o desde Guanacaste conviene hacerlo en plataforma: el vehículo viaja cargado, no suma kilometraje y no se expone a que un problema mecánico empeore en el camino. Es la diferencia entre entregar el carro como estaba y entregarlo con doscientos kilómetros más encima.',
+      },
+    ],
+    nearby: ['gruas-costa-rica', 'gruas-puntarenas', 'gruas-occidente', 'gruas-san-ramon'],
+    priority: 0.6,
+  },
+  {
+    slug: 'gruas-puntarenas',
+    name: 'Puntarenas',
+    inName: 'en Puntarenas',
+    heading: 'Grúas y traslados en Puntarenas',
+    metaTitle: 'Grúas en Puntarenas · Traslados 24/7',
+    metaDescription:
+      'Traslado de vehículos en Puntarenas: Esparza, Caldera, Jacó, Quepos y el Pacífico Sur. Coordinado con hora y precio cerrados. Llame al 8387-6352.',
+    kind: 'provincia',
+    dispatch: 'coordinada',
+    geo: { latitude: 9.9763, longitude: -84.8384 },
+    lead:
+      'Puntarenas es la provincia más larga del país: de Esparza al sur de Golfito hay una diferencia enorme de tiempo. La parte cercana —Esparza, Caldera, Orotina— la atendemos bajando por la Interamericana; del Pacífico central hacia el sur, el servicio es traslado coordinado con hora y precio cerrados.',
+    places: [
+      'Puntarenas centro',
+      'Esparza',
+      'Caldera',
+      'Miramar',
+      'Jacó',
+      'Quepos',
+      'Parrita',
+      'Monteverde',
+      'Osa',
+      'Golfito',
+      'Corredores',
+    ],
+    routes: [
+      {
+        name: 'Ruta 27 · Ruta del Sol',
+        note: 'San José – Caldera. Alta velocidad y el acceso más rápido al Pacífico central.',
+      },
+      {
+        name: 'Bajura de San Ramón (Ruta 1)',
+        note: 'El descenso hacia Esparza. Frenos exigidos y tráfico pesado: es de los tramos donde más nos llaman.',
+      },
+      {
+        name: 'Ruta 34 · Costanera Sur',
+        note: 'Jacó, Parrita, Quepos y Dominical. Puentes angostos y tramos sin hombro.',
+      },
+      {
+        name: 'Ruta 2 · Interamericana Sur',
+        note: 'Cerro de la Muerte hacia el Pacífico Sur. Altura, neblina y pendientes largas.',
+      },
+    ],
+    body: [
+      {
+        title: 'La parte cercana es otra cosa',
+        text: 'Esparza, Caldera y la bajura son prácticamente una extensión de nuestra zona de trabajo: bajamos por ahí constantemente y el tramo de la Ruta 1 desde San Ramón lo conocemos de memoria. Ahí los tiempos se parecen más a los de Occidente que a los del resto de la provincia. De Jacó hacia el sur la distancia manda y el servicio se coordina.',
+      },
+      {
+        title: 'Fin de semana en la playa que termina mal',
+        text: 'Viernes en la tarde y domingo en la noche el flujo hacia el Pacífico se dispara, y con él las varadas: recalentamiento en la subida de regreso, llantas reventadas después de kilómetros de sol y baterías que no aguantaron. Si le pasó y el vehículo tiene que volver al Valle Central, ese traslado lo hacemos con el precio cerrado desde la llamada.',
+      },
+      {
+        title: 'Traslados desde el Pacífico Sur',
+        text: 'Osa, Golfito y Corredores están a muchas horas de Grecia. Son viajes que se planifican: se acuerda el día, se confirma el monto y se coordina quién entrega y quién recibe el vehículo. No es un servicio de emergencia a esa distancia, y decirlo claro evita que alguien espere una grúa que no va a llegar a tiempo.',
+      },
+    ],
+    nearby: ['gruas-costa-rica', 'gruas-guanacaste', 'gruas-san-ramon', 'gruas-atenas'],
+    priority: 0.6,
+  },
+  {
+    slug: 'gruas-limon',
+    name: 'Limón',
+    inName: 'en Limón',
+    heading: 'Grúas y traslados en Limón',
+    metaTitle: 'Grúas en Limón · Traslados y Rescate',
+    metaDescription:
+      'Traslado de vehículos desde y hacia Limón: Guápiles, Siquirres, Matina y el Caribe Sur, por la Ruta 32. Coordinado con precio cerrado. 8387-6352.',
+    kind: 'provincia',
+    dispatch: 'coordinada',
+    geo: { latitude: 9.9907, longitude: -83.0359 },
+    lead:
+      'Llegar al Caribe significa cruzar el Braulio Carrillo, y esa carretera manda sobre cualquier estimación de tiempo: lluvia constante, deslizamientos y cierres que nadie anuncia con antelación. Por eso aquí trabajamos con traslados coordinados y con el tiempo dicho de frente, no con promesas de llegada.',
+    places: [
+      'Limón centro',
+      'Guápiles',
+      'Guácimo',
+      'Siquirres',
+      'Matina',
+      'Batán',
+      'Pococí',
+      'Cahuita',
+      'Puerto Viejo',
+      'Talamanca',
+    ],
+    routes: [
+      {
+        name: 'Ruta 32 · Braulio Carrillo',
+        note: 'El paso obligado. Lluvia constante, neblina en la parte alta, deslizamientos y tráfico de contenedores.',
+      },
+      {
+        name: 'Ruta 36 (Limón – Cahuita – Sixaola)',
+        note: 'La costa caribeña hacia el sur, con tramos angostos y puentes de una vía.',
+      },
+      {
+        name: 'Ruta 4 (Zona Norte – Caribe)',
+        note: 'Alternativa por Guápiles cuando la 32 está cerrada.',
+      },
+    ],
+    body: [
+      {
+        title: 'La Ruta 32 decide el tiempo, no nosotros',
+        text: 'El Braulio Carrillo se cierra por deslizamientos con más frecuencia de la que uno quisiera, y cuando eso pasa el desvío suma horas. Es la razón principal por la que aquí no damos un tiempo de llegada corto: preferimos decirle "el traslado se hace mañana a tal hora" y cumplir, que prometerle algo hoy y quedar atrapados en un cierre.',
+      },
+      {
+        title: 'Guápiles y Siquirres están más cerca de lo que parece',
+        text: 'La primera parte de la provincia —Guápiles, Guácimo, Siquirres— queda del lado de acá de la montaña y es notablemente más accesible que la costa. Muchos de los traslados que hacemos hacia el Caribe terminan ahí: vehículos que van a un taller del Valle Central o que vuelven de uno.',
+      },
+      {
+        title: 'Humedad, sal y vehículos guardados',
+        text: 'En el Caribe un vehículo que pasa meses sin moverse se deteriora rápido: humedad, sal y óxido trabajan todo el año. Cuando toca sacarlo, lo normal es que ya no arranque ni ruede bien. Ese caso se resuelve con cabrestante y plataforma, cargándolo completo, y es de los traslados que más nos piden desde esta zona.',
+      },
+    ],
+    nearby: ['gruas-costa-rica', 'gruas-cartago', 'gruas-san-jose', 'gruas-heredia'],
+    priority: 0.6,
+  },
 ];
+
+/* Revienta el build si alguien agrega una zona y olvida `lib/nav.ts`. */
+assertNavParity(ZONES, ZONE_LINKS, 'lib/zones.ts');
 
 export const ZONE_SLUGS = ZONES.map((z) => z.slug);
 
@@ -795,3 +1107,33 @@ export function getZone(slug: string): Zone | undefined {
 
 /** Zonas destacadas en el home y en el menú. */
 export const FEATURED_ZONES = ZONES.filter((z) => z.priority >= 1);
+
+/**
+ * Vecinas de una zona: lo que declara MÁS quien la declara a ella.
+ *
+ * Por qué la unión y no solo `nearby`: los enlaces estaban escritos a mano y
+ * dieciséis de ellos eran de una sola vía. Occidente enlazaba a Grecia y
+ * Grecia no devolvía el enlace; Heredia enlazaba a Poás, a Alajuela y a Grecia
+ * sin que ninguna respondiera. Un enlace de ida y vuelta reparte autoridad en
+ * los dos sentidos y le da al rastreador un grafo sin callejones; uno de ida
+ * sola desperdicia la mitad.
+ *
+ * Calcularlo en vez de arreglar las dieciséis listas a mano es lo que evita
+ * que el problema vuelva: cualquier zona nueva queda simétrica el día que se
+ * escribe, sin que nadie tenga que acordarse de editar las vecinas.
+ *
+ * El orden respeta primero lo declarado a propósito —esas son las vecinas
+ * geográficas de verdad, las que el autor eligió— y después las entrantes.
+ */
+export function getNeighbors(slug: string): Zone[] {
+  const zone = getZone(slug);
+  if (!zone) return [];
+
+  const entrantes = ZONES.filter((z) => z.slug !== slug && z.nearby.includes(slug)).map(
+    (z) => z.slug
+  );
+
+  const slugs = [...new Set([...zone.nearby, ...entrantes])];
+
+  return slugs.map(getZone).filter((z): z is Zone => z !== undefined);
+}

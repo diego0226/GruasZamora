@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { Reveal } from '@/components/ui/Reveal';
 import { CountUp } from '@/components/ui/CountUp';
-import { SITE } from '@/lib/site';
+import { yearsOfExperience } from '@/lib/site';
 
 const STATS = [
-  { value: SITE.yearsOfExperience, suffix: '+', label: 'Años en la carretera' },
+  { value: yearsOfExperience(), suffix: '+', label: 'Años en la carretera' },
   // "24/7" se muestra fijo: verlo contar desde "0/7" se lee como un error.
   { text: '24/7', label: 'Disponibilidad real' },
   { value: 7, suffix: '', label: 'Provincias cubiertas' },
@@ -54,7 +54,7 @@ export function About() {
           <div className="mt-6 space-y-5 text-base leading-relaxed text-chrome-300 sm:text-lg">
             <p>
               Grúas Zamora Moya nació en Grecia y ahí sigue. Más de{' '}
-              {SITE.yearsOfExperience} años atendiendo llamadas a cualquier hora, con equipo
+              {yearsOfExperience()} años atendiendo llamadas a cualquier hora, con equipo
               propio y gente que conoce la zona porque vive en ella.
             </p>
             <p>
@@ -83,7 +83,7 @@ export function About() {
                     <CountUp to={stat.value} suffix={stat.suffix} />
                   )}
                 </dd>
-                <dt className="mt-2.5 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.15em] text-chrome-500">
+                <dt className="mt-2.5 text-[0.65rem] font-bold uppercase leading-tight tracking-[0.15em] text-chrome-400">
                   {stat.label}
                 </dt>
               </div>

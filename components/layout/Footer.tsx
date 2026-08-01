@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { SITE } from '@/lib/site';
-import { SERVICES } from '@/lib/services';
-import { ZONES } from '@/lib/zones';
+import { SERVICE_LINKS, ZONE_LINKS } from '@/lib/nav';
 
 /**
  * Además de cerrar la página, el pie es el mapa del sitio para los crawlers:
@@ -28,6 +27,7 @@ export function Footer() {
           <div className="space-y-3 text-sm">
             <a
               href={SITE.phone.href}
+              data-cta="call-footer"
               className="flex items-center gap-3 font-bold text-chrome-100 transition-colors hover:text-flag-red-lit"
             >
               <Phone className="size-4 shrink-0 text-flag-red-lit" />
@@ -35,6 +35,7 @@ export function Footer() {
             </a>
             <a
               href={`mailto:${SITE.email}`}
+              data-cta="email-footer"
               className="flex items-center gap-3 text-chrome-400 transition-colors hover:text-chrome-100"
             >
               <Mail className="size-4 shrink-0 text-flag-red-lit" />
@@ -78,7 +79,17 @@ export function Footer() {
             Servicios
           </h2>
           <ul className="space-y-3">
-            {SERVICES.map((s) => (
+            {/* El índice va primero y explícito: no tenía ni un enlace desde el
+                pie, que es el bloque que reparte autoridad a todo el sitio. */}
+            <li>
+              <Link
+                href="/servicios"
+                className="text-sm text-chrome-400 transition-colors hover:text-flag-red-lit"
+              >
+                Todos los servicios
+              </Link>
+            </li>
+            {SERVICE_LINKS.map((s) => (
               <li key={s.slug}>
                 <Link
                   href={`/servicios/${s.slug}`}
@@ -89,6 +100,36 @@ export function Footer() {
               </li>
             ))}
           </ul>
+
+          <h2 className="mb-5 mt-8 font-display text-sm tracking-[0.22em] text-chrome-50">
+            Información
+          </h2>
+          <ul className="space-y-3">
+            <li>
+              <Link
+                href="/que-hacer-si-se-vara"
+                className="text-sm text-chrome-400 transition-colors hover:text-flag-red-lit"
+              >
+                Qué hacer si se le varó el carro
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/contacto"
+                className="text-sm text-chrome-400 transition-colors hover:text-flag-red-lit"
+              >
+                Contacto y cobertura
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/privacidad"
+                className="text-sm text-chrome-400 transition-colors hover:text-flag-red-lit"
+              >
+                Privacidad
+              </Link>
+            </li>
+          </ul>
         </nav>
 
         {/* Zonas — el bloque de enlaces internos que sostiene el SEO local */}
@@ -97,13 +138,13 @@ export function Footer() {
             Zonas de cobertura
           </h2>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
-            {ZONES.map((z) => (
+            {ZONE_LINKS.map((z) => (
               <li key={z.slug}>
                 <Link
                   href={`/${z.slug}`}
                   className="text-sm text-chrome-400 transition-colors hover:text-flag-red-lit"
                 >
-                  Grúas {z.inName.replace(/^en /, '')}
+                  Grúas {z.name}
                 </Link>
               </li>
             ))}
@@ -129,10 +170,10 @@ export function Footer() {
 
       <div className="border-t border-chrome-300/10 px-5 py-6 sm:px-6">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
-          <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-chrome-500">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-chrome-400">
             © {year} {SITE.name} · Grecia, Costa Rica
           </p>
-          <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-chrome-500">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-chrome-400">
             Pólizas del INS · Factura electrónica
           </p>
         </div>
