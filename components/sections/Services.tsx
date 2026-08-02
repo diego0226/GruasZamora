@@ -3,8 +3,14 @@ import { ArrowRight, Check } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ServiceIcon } from '@/components/ui/ServiceIcon';
 import { Reveal } from '@/components/ui/Reveal';
-import { SERVICES } from '@/lib/services';
+import { UNIT_SERVICES } from '@/lib/services';
 
+/**
+ * Las dos unidades de la flotilla. Los casos con página propia —eléctricos,
+ * carros bloqueados— van en `SpecialCases`, justo debajo: mezclarlos aquí
+ * rompería la pregunta que esta sección responde, que es «¿cuál de las dos
+ * grúas me mandan?».
+ */
 export function Services() {
   return (
     <section id="servicios" className="tread-plate scroll-mt-24 bg-night-900 py-20 lg:py-28">
@@ -20,7 +26,7 @@ export function Services() {
         />
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2">
-          {SERVICES.map((service, i) => (
+          {UNIT_SERVICES.map((service, i) => (
             <Reveal
               key={service.slug}
               from={i % 2 === 0 ? 'left' : 'right'}

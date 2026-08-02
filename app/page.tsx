@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { Hero } from '@/components/sections/Hero';
 import { Services } from '@/components/sections/Services';
+import { SpecialCases } from '@/components/sections/SpecialCases';
 import { Coverage } from '@/components/sections/Coverage';
 import { EmergencySteps } from '@/components/sections/EmergencySteps';
 import { About } from '@/components/sections/About';
@@ -31,7 +32,7 @@ export default function HomePage() {
             path: '/',
             name: 'Grúas Zamora Moya — Grúas 24/7 en Grecia y todo Costa Rica',
             description:
-              'Grúas 24/7 en Grecia y todo Costa Rica. Plataforma, arrastre y rescate vehicular.',
+              'Grúas 24/7 en Grecia y todo Costa Rica. Plataforma, arrastre, rescate vehicular y traslado de carros eléctricos o con las llantas trabadas con speed dollies.',
             dateModified: CONTENT_UPDATED.home,
             primaryEntityId: faq['@id'],
           }),
@@ -41,6 +42,7 @@ export default function HomePage() {
 
       <Hero />
       <Services />
+      <SpecialCases />
       <Coverage />
       <EmergencySteps />
       <About />

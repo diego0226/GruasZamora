@@ -90,7 +90,7 @@ const CASOS = [
   },
   {
     title: 'Si el vehículo es eléctrico o híbrido',
-    body: 'Avísenos al llamar. Los fabricantes prohíben remolcarlos con las llantas motrices en el suelo, porque al girar el motor eléctrico genera corriente y puede dañar el sistema de tracción. Se traslada en plataforma, cargado completo — es el único método aprobado.',
+    body: 'Avísenos al llamar y no deje que nadie lo jale ni lo empuje «unos metros nomás». Los fabricantes prohíben remolcarlos con las llantas motrices en el suelo, porque al girar el motor eléctrico genera corriente y puede dañar el sistema de tracción. Se traslada con las cuatro ruedas sin girar: cargado en plataforma, o con speed dollies si está donde una cama plana no entra.',
   },
   {
     title: 'Si está en montaña o con neblina',

@@ -1,10 +1,12 @@
-import { Truck, Anchor } from 'lucide-react';
+import { Truck, Anchor, BatteryCharging, Lock } from 'lucide-react';
 import type { IconKey } from '@/lib/services';
 import { cn } from '@/lib/utils';
 
 const REGISTRY = {
   flatbed: Truck,
   wrecker: Anchor,
+  ev: BatteryCharging,
+  locked: Lock,
 } as const satisfies Record<IconKey, unknown>;
 
 export function ServiceIcon({ name, className }: { name: IconKey; className?: string }) {

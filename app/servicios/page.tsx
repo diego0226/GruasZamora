@@ -10,7 +10,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { FinalCta } from '@/components/sections/FinalCta';
 import { JsonLd } from '@/components/JsonLd';
 
-import { SERVICES } from '@/lib/services';
+import { SERVICES, UNIT_SERVICES, CASE_SERVICES } from '@/lib/services';
 import { FAQ_CANONICAL_PATH } from '@/lib/faq';
 import { CONTENT_UPDATED } from '@/lib/site';
 import { pageMetadata } from '@/lib/metadata';
@@ -18,7 +18,7 @@ import { breadcrumbSchema, serviceListSchema, webPageSchema } from '@/lib/schema
 
 const TITLE = 'Servicios de Grúa en Costa Rica 24/7';
 const DESCRIPTION =
-  'Grúa de plataforma y grúa de arrastre con cabrestante para rescate vehicular. Servicio 24/7 desde Grecia, Alajuela, hacia cualquier punto de Costa Rica.';
+  'Grúa de plataforma, grúa de arrastre con cabrestante y speed dollies para carros eléctricos o con las llantas trabadas. 24/7 desde Grecia a todo Costa Rica.';
 
 export const metadata: Metadata = pageMetadata({
   title: TITLE,
@@ -47,12 +47,17 @@ const COMPARACION = [
   {
     criterio: 'Suma kilometraje',
     plataforma: 'No.',
-    arrastre: 'Sí, en el eje que queda en el suelo.',
+    arrastre: 'Sí, en el eje que queda en el suelo. Con speed dollies, tampoco.',
   },
   {
     criterio: 'Eléctricos e híbridos',
-    plataforma: 'Es el único método aprobado por los fabricantes.',
-    arrastre: 'No debe usarse: el motor eléctrico genera corriente al girar.',
+    plataforma: 'Sí. Es la primera opción: viaja cargado completo.',
+    arrastre: 'Sí, pero solo con speed dollies: ninguna rueda debe girar.',
+  },
+  {
+    criterio: 'Llantas trabadas o caja en Park',
+    plataforma: 'Sí, sube con cabrestante si hay espacio para cargarlo.',
+    arrastre: 'Sí, con speed dollies. No necesita neutro ni soltar el freno.',
   },
   {
     criterio: 'Autos de lujo y deportivos bajos',
@@ -62,7 +67,7 @@ const COMPARACION = [
   {
     criterio: 'Vehículo que no rueda',
     plataforma: 'Sí, sube con cabrestante.',
-    arrastre: 'Depende de qué eje esté dañado.',
+    arrastre: 'Sí, salvo que falte la llanta: el dolly necesita la rueda puesta.',
   },
   {
     criterio: 'Sótanos y parqueos de techo bajo',
@@ -112,14 +117,14 @@ export default function ServicesIndexPage() {
             <span className="text-flag-red-lit">grúa y remolque</span>
           </>
         }
-        lead="Dos unidades distintas para dos problemas distintos. Si no sabe cuál necesita, llame y lo definimos en la conversación: describir bien lo que pasó es la mitad de la solución."
+        lead="Dos unidades distintas para dos problemas distintos, y equipo que la mayoría de las grúas del país no carga. Si no sabe cuál necesita, llame y lo definimos en la conversación: describir bien lo que pasó es la mitad de la solución."
         image="/grua2.jpg"
         imageAlt="Grúa de plataforma de Grúas Zamora Moya lista para un servicio de remolque en Costa Rica"
       />
 
       <section className="tread-plate bg-night-900 py-16 lg:py-24">
         <div className="mx-auto max-w-7xl space-y-5 px-5 sm:px-6">
-          {SERVICES.map((service, i) => (
+          {UNIT_SERVICES.map((service, i) => (
             <Reveal key={service.slug} from={i % 2 === 0 ? 'left' : 'right'}>
               <article className="lift grid overflow-hidden border border-chrome-300/12 bg-night-800 lg:grid-cols-[1fr_1.15fr]">
                 <div className="relative min-h-[220px] lg:min-h-[300px]">
@@ -162,6 +167,58 @@ export default function ServicesIndexPage() {
               </article>
             </Reveal>
           ))}
+        </div>
+      </section>
+
+      {/* Casos con página propia.
+          Van aparte de las dos unidades y antes de la tabla a propósito: la
+          tabla ya menciona los speed dollies en dos filas, y aquí es donde se
+          explica qué son. Ver la nota de cabecera de lib/services.ts sobre por
+          qué estos dos casos tienen URL propia en vez de ser un párrafo dentro
+          de la página de plataforma. */}
+      <section className="tread-plate bg-night-950 py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6">
+          <SectionHeading
+            eyebrow="Casos que otros rechazan"
+            title={
+              <>
+                Lo que resuelven los <span className="text-flag-red-lit">speed dollies</span>
+              </>
+            }
+            lead="Dos plataformas rodantes que se meten bajo las llantas que quedarían en el suelo. Con ellas la unidad de arrastre mueve el vehículo sin que ninguna de sus cuatro ruedas gire, y eso destraba los dos casos donde la respuesta habitual es «así no me lo puedo llevar»."
+          />
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2">
+            {CASE_SERVICES.map((service, i) => (
+              <Reveal key={service.slug} delay={i * 90} className="h-full">
+                <Link
+                  href={`/servicios/${service.slug}`}
+                  className="lift group flex h-full flex-col border-l-4 border-flag-red bg-night-800 p-7"
+                >
+                  <span className="mb-5 flex size-12 items-center justify-center rounded-sm bg-flag-blue/45 text-flag-red-lit ring-1 ring-chrome-300/10">
+                    <ServiceIcon name={service.icon} className="size-6" />
+                  </span>
+
+                  <h3 className="text-xl text-chrome-50 sm:text-2xl">{service.name}</h3>
+                  <p className="mt-3.5 leading-relaxed text-chrome-400">{service.summary}</p>
+
+                  <ul className="mt-6 space-y-2.5">
+                    {service.specs.slice(0, 3).map((spec) => (
+                      <li key={spec} className="flex items-start gap-2.5 text-sm text-chrome-300">
+                        <Check className="mt-0.5 size-4 shrink-0 text-flag-red-lit" />
+                        {spec}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <span className="mt-auto inline-flex items-center gap-2 pt-7 text-xs font-bold uppercase tracking-wider text-flag-red-lit">
+                    Ver {service.name.toLowerCase()}
+                    <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

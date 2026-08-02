@@ -95,7 +95,7 @@ export function localBusinessSchema() {
     alternateName: [...SITE.alternateNames],
     legalName: SITE.legalName,
     description:
-      'Servicio de grúas 24/7 en Costa Rica. Remolque con grúa de plataforma y de arrastre, y rescate vehicular. Empresa de Grecia, Alajuela, con cobertura en todo el territorio nacional.',
+      'Servicio de grúas 24/7 en Costa Rica. Remolque con grúa de plataforma y de arrastre, rescate vehicular y traslado de vehículos eléctricos, híbridos y con las llantas trabadas mediante speed dollies. Empresa de Grecia, Alajuela, con cobertura en todo el territorio nacional.',
     url: SITE.url,
     telephone: SITE.phone.e164,
     email: SITE.email,
@@ -282,6 +282,11 @@ export function serviceSchema(service: Service) {
     '@type': 'Service',
     '@id': ids.service,
     name: service.name,
+    /* Las otras formas en que la gente nombra este servicio. Mismo papel que
+       el `alternateName` de la ficha del negocio: acercar la entidad a la
+       consulta real. «Grúa para carro eléctrico» y «remolque de vehículo
+       eléctrico» son la misma cosa y solo una cabe en `name`. */
+    ...(service.alternateNames?.length && { alternateName: service.alternateNames }),
     serviceType: service.heading,
     description: service.metaDescription,
     url: ids.url,

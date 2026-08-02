@@ -56,7 +56,7 @@ const DATOS = [
   {
     titulo: 'Qué vehículo es',
     texto:
-      'Marca, modelo y si es eléctrico o híbrido. Eso decide la unidad: un eléctrico va en plataforma sí o sí, y un vehículo muy bajo necesita rampas.',
+      'Marca, modelo y si es eléctrico o híbrido. Eso decide la unidad: un eléctrico viaja con las cuatro llantas sin girar —en plataforma o sobre speed dollies—, y un vehículo muy bajo necesita rampas.',
   },
   {
     titulo: 'Qué le pasó',

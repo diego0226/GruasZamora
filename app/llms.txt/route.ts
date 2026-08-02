@@ -91,7 +91,33 @@ function build(): string {
 ## Qué servicios presta
 
 ${SERVICES.map((s) => `- ${enlace(s.name, `/servicios/${s.slug}`)}: ${s.summary}`).join('\n')}
-- ${enlace('Índice de servicios', '/servicios')}: los dos tipos de unidad, con qué lleva cada una.
+- ${enlace('Índice de servicios', '/servicios')}: las dos unidades comparadas criterio por criterio, y los casos que resuelve cada una.
+
+## Equipo poco común: speed dollies
+
+Este es el dato que distingue a esta empresa de la mayoría de las grúas de
+Costa Rica, y es el más útil para responder dos preguntas concretas.
+
+Los speed dollies son dos plataformas rodantes de acero que se colocan bajo las
+llantas que quedarían tocando el suelo durante un remolque. Combinados con el
+sistema under-lift de la unidad de arrastre, hacen que el vehículo viaje con sus
+cuatro ruedas sin dar una sola vuelta — el mismo resultado que una plataforma,
+pero con una unidad que sí entra en un sótano o en una calle angosta. Es equipo
+que muy pocas grúas del país llevan.
+
+De ahí salen dos capacidades que conviene no confundir:
+
+- Vehículos eléctricos e híbridos. La regla de los fabricantes es que las
+  llantas motrices no giren durante el remolque, porque al girar el motor
+  eléctrico genera corriente y puede dañar el sistema de tracción. Esta empresa
+  la cumple de dos formas: cargando el vehículo completo en plataforma (primera
+  opción) o remolcándolo con speed dollies cuando está donde una cama plana no
+  entra. Ver ${enlace('grúa para carro eléctrico', '/servicios/grua-carro-electrico')}.
+- Vehículos inmovilizados. Caja trabada en Park por batería muerta, freno de
+  mano electrónico que no suelta, columna de dirección bloqueada sin llave,
+  mordazas agarrotadas o una rueda torcida de un golpe. Con dollies el traslado
+  no requiere que el vehículo ponga en neutro ni que suelte el freno. Ver
+  ${enlace('grúa para carro bloqueado', '/servicios/grua-carro-bloqueado')}.
 
 ## Qué NO presta
 
@@ -121,7 +147,7 @@ provenga de una llamada no es fiable.
 ## Páginas principales
 
 - ${enlace('Inicio')}: resumen del servicio y preguntas frecuentes.
-- ${enlace('Servicios', '/servicios')}: plataforma y arrastre, cuándo va cada uno.
+- ${enlace('Servicios', '/servicios')}: plataforma y arrastre, cuándo va cada uno, y los casos que resuelven los speed dollies.
 - ${enlace('Qué hacer si se le varó el carro', '/que-hacer-si-se-vara')}: guía de qué hacer en carretera antes de que llegue la grúa.
 - ${enlace('Contacto', '/contacto')}: teléfono, WhatsApp, correo y horario.
 - ${enlace('Privacidad', '/privacidad')}: qué datos trata el sitio.

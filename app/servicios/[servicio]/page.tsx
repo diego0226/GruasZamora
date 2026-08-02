@@ -194,8 +194,12 @@ export default async function ServicePage({
       {/* Otros servicios */}
       <section className="tread-plate bg-night-950 py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading eyebrow="También ofrecemos" title="El otro tipo de unidad" />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <SectionHeading
+            eyebrow="También ofrecemos"
+            title="Los demás servicios"
+            lead="Las dos unidades de la flotilla y los casos que resolvemos con equipo que la mayoría de las grúas del país no lleva."
+          />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((other, i) => (
               <Reveal key={other.slug} delay={i * 80} className="h-full">
                 <Link

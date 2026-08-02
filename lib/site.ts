@@ -180,11 +180,16 @@ export const OG_IMAGE = {
  * pierde la capacidad de señalar un cambio real el día que importe.
  */
 export const CONTENT_UPDATED = {
-  home: '2026-07-31',
-  services: '2026-07-31',
-  zones: '2026-07-31',
+  /* 2026-08-01: entra el speed dolly. Los cuatro grupos cambiaron de verdad —
+     dos páginas de servicio nuevas, sección nueva en la portada, y la
+     corrección de todo lo que el sitio afirmaba sobre remolcar eléctricos, que
+     tocaba la FAQ general, las catorce landings de zona, la guía de emergencia
+     y la página de contacto. */
+  home: '2026-08-01',
+  services: '2026-08-01',
+  zones: '2026-08-01',
   /** Páginas informativas: contacto, privacidad, guía de emergencia. */
-  info: '2026-07-31',
+  info: '2026-08-01',
 } as const;
 
 /** Palabras clave objetivo. Se usan en metadata y para revisar cobertura editorial. */
@@ -201,4 +206,14 @@ export const TARGET_KEYWORDS = [
   'grúa 24 horas Costa Rica',
   'remolque de vehículos Costa Rica',
   'grúa plataforma Costa Rica',
+  /* Prioridad 3 — las consultas del speed dolly.
+     Volumen menor que las de arriba, pero intención de compra máxima y
+     prácticamente sin competencia local: casi ninguna grúa del país tiene el
+     equipo, así que casi ninguna web lo menciona. Cada una tiene su propia URL
+     en /servicios — ver la nota de cabecera de lib/services.ts. */
+  'grúa para carro eléctrico',
+  'grúa para carro eléctrico Costa Rica',
+  'grúa para carro bloqueado',
+  'grúa para carro con llantas trabadas',
+  'speed dolly Costa Rica',
 ] as const;

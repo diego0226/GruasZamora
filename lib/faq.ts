@@ -64,7 +64,7 @@ export const FAQS: Faq[] = [
   {
     question: '¿Qué diferencia hay entre una grúa de plataforma y una de arrastre?',
     answer:
-      'La plataforma carga el vehículo completo sobre una cama plana: ninguna llanta toca el suelo, no suma kilometraje y no hay desgaste. Es la opción correcta para autos de lujo, deportivos bajos, eléctricos, híbridos y vehículos sin llantas o sin frenos. La de arrastre levanta el vehículo por las llantas con un sistema under-lift y lo remolca; sirve donde una plataforma no maniobra —sótanos, calles angostas, cunetas— y trae cabrestante para recuperar vehículos fuera de la vía. Tenemos las dos y le decimos cuál necesita según lo que nos describa.',
+      'La plataforma carga el vehículo completo sobre una cama plana: ninguna llanta toca el suelo, no suma kilometraje y no hay desgaste. Es la opción correcta para autos de lujo, deportivos bajos, eléctricos, híbridos y vehículos sin llantas o sin frenos. La de arrastre levanta el vehículo por las llantas con un sistema under-lift y lo remolca; sirve donde una plataforma no maniobra —sótanos, calles angostas, cunetas— y trae cabrestante para recuperar vehículos fuera de la vía. Nuestra unidad de arrastre además carga speed dollies, dos plataformas rodantes que van bajo las llantas que quedarían en el suelo: con ellas el vehículo viaja sin que ninguna rueda gire, que es lo que permite mover un eléctrico o un carro con las llantas trabadas sin una cama plana. Tenemos las dos unidades y le decimos cuál necesita según lo que nos describa.',
   },
   {
     question: '¿Qué debo hacer mientras espero la grúa?',
@@ -74,7 +74,7 @@ export const FAQS: Faq[] = [
   {
     question: '¿Pueden trasladar vehículos eléctricos e híbridos?',
     answer:
-      'Sí, y siempre en plataforma. Los fabricantes de vehículos eléctricos prohíben remolcarlos con las llantas motrices en el suelo, porque al girar el motor eléctrico genera corriente y puede dañar el sistema de tracción. Cargarlo completo sobre la cama es el único método aprobado, y es el que usamos.',
+      'Sí, y con las dos unidades. La regla que ponen los fabricantes es una sola: las llantas motrices no pueden girar durante el remolque, porque al girar el motor eléctrico genera corriente y puede dañar el sistema de tracción. Se cumple de dos formas. La primera es la plataforma, que lo carga completo sobre la cama. La segunda son los speed dollies de nuestra unidad de arrastre: dos plataformas rodantes que van bajo las llantas que quedarían en el suelo, de modo que ninguna rueda da una vuelta. Esa segunda opción es la que resuelve cuando el carro está en un sótano o en una calle donde una cama plana no entra, y es equipo que muy pocas grúas del país llevan.',
   },
   {
     question: '¿Trasladan vehículos que no arrancan o que están sin llantas?',
@@ -146,7 +146,7 @@ function terrain(zone: Zone): { rough: boolean; tight: boolean; highway: boolean
 
 function unitAnswer(zone: Zone): string {
   if (zone.kind === 'nacional') {
-    return 'Depende de dos cosas: qué vehículo es y dónde quedó. La plataforma es obligatoria en eléctricos e híbridos y es la correcta en autos de lujo, deportivos bajos, vehículos sin llantas o sin frenos y traslados largos entre provincias, porque viaja cargado y no suma kilometraje. La unidad de arrastre, con under-lift y cabrestante, entra donde una cama plana no maniobra: sótanos, calles angostas y vehículos fuera de la vía. Cuando llame, descríbanos el vehículo y el lugar y le decimos cuál corresponde antes de que salga la unidad.';
+    return 'Depende de dos cosas: qué vehículo es y dónde quedó. La plataforma es la primera opción en eléctricos e híbridos y la correcta en autos de lujo, deportivos bajos, vehículos sin llantas o sin frenos y traslados largos entre provincias, porque viaja cargado y no suma kilometraje. La unidad de arrastre, con under-lift y cabrestante, entra donde una cama plana no maniobra: sótanos, calles angostas y vehículos fuera de la vía; y como lleva speed dollies, ahí también puede mover un eléctrico o un carro con las llantas trabadas sin que ninguna rueda gire. Cuando llame, descríbanos el vehículo y el lugar y le decimos cuál corresponde antes de que salga la unidad.';
   }
 
   const { rough, tight, highway } = terrain(zone);
@@ -169,7 +169,7 @@ function unitAnswer(zone: Zone): string {
   }
 
   partes.push(
-    'La plataforma es además obligatoria para eléctricos e híbridos y es lo correcto para autos de lujo, deportivos bajos y vehículos que no ruedan. Tenemos las dos unidades, así que la decisión se toma en la llamada según lo que nos describa, y sale la correcta a la primera.'
+    'La plataforma es además la primera opción para eléctricos e híbridos y es lo correcto para autos de lujo, deportivos bajos y vehículos que no ruedan. Y cuando el carro está donde una cama plana no entra, la unidad de arrastre lo resuelve con speed dollies: las cuatro llantas viajan sin girar, así que sirve igual para un eléctrico o para uno con la caja trabada. Tenemos las dos unidades, así que la decisión se toma en la llamada según lo que nos describa, y sale la correcta a la primera.'
   );
 
   return partes.join(' ');

@@ -63,10 +63,18 @@ export const ZONE_LINKS: NavLink[] = [
   { slug: 'gruas-limon', name: 'Limón' },
 ];
 
-/** Servicios del catálogo. Coincide con `SERVICES` de `lib/services.ts`. */
+/**
+ * Servicios del catálogo. Coincide con `SERVICES` de `lib/services.ts`.
+ *
+ * El orden importa: primero las dos unidades de la flotilla, después los casos
+ * con página propia. Es el orden en que salen en el menú móvil y en el pie, y
+ * el mismo que usan el home y el índice de servicios.
+ */
 export const SERVICE_LINKS: NavLink[] = [
   { slug: 'grua-plataforma', name: 'Grúa de plataforma' },
   { slug: 'grua-arrastre', name: 'Grúa de arrastre' },
+  { slug: 'grua-carro-electrico', name: 'Grúa para carro eléctrico' },
+  { slug: 'grua-carro-bloqueado', name: 'Grúa para carro bloqueado' },
 ];
 
 /**
