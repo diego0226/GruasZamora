@@ -144,12 +144,20 @@ export function localBusinessSchema() {
     /** Abierto 24/7 — el atributo más importante para un servicio de grúas. */
     openingHoursSpecification: HORARIO_24_7,
     /* `sameAs` es lo que le confirma a Google que estos perfiles y este sitio
-       son la misma empresa. La ficha de Google Business solo entra si está
-       configurada: un enlace vacío o inventado haría más daño que bien.
+       son la misma empresa. Es la señal que más pesa en búsquedas locales como
+       «grúas Grecia»: el paquete de mapas lo alimenta la ficha de Google
+       Business, no la web, y atarlas explícitamente evita que Google tenga que
+       deducir cuál de los homónimos del cantón es cuál.
 
-       ⚠️ Comprobado en producción: hoy esta variable NO está definida en
-       Vercel, así que el `sameAs` sale con Facebook e Instagram nada más. Es
-       el enlace más valioso que le falta al sitio — ver .env.example. */
+       El `filter(Boolean)` deja fuera la ficha si la variable no está
+       definida — en una preview, por ejemplo. Es a propósito: un enlace vacío
+       o inventado haría más daño que no declarar ninguno. Ver .env.example.
+
+       Aquí vivía una nota que afirmaba que la variable NO estaba configurada
+       en Vercel. Lo estuvo hasta que dejó de estarlo, y el comentario siguió
+       diciendo lo contrario. Un comentario no puede afirmar el estado de un
+       entorno que cambia sin tocar este archivo: para saber qué se está
+       publicando de verdad, mire el `sameAs` del HTML en producción. */
     sameAs: [SITE.social.facebook, SITE.social.instagram, SITE.googleBusinessUrl].filter(Boolean),
     /* Cada oferta apunta a la URL donde ese servicio está explicado. Antes el
        catálogo listaba cuatro nombres sueltos, dos de los cuales no
